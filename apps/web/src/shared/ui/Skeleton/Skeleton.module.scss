@@ -1,0 +1,28 @@
+@use "variables" as vars;
+
+.root {
+  height: 12px;
+  background-image: linear-gradient(
+    90deg,
+    var(--color-surface-muted) 0%,
+    var(--color-surface-hover) 50%,
+    var(--color-surface-muted) 100%
+  );
+  background-size: 200% 100%;
+  border-radius: var(--radius-sm);
+  animation: skeleton-pulse 1.4s vars.$easing-standard infinite;
+}
+
+.circle {
+  border-radius: var(--radius-full);
+}
+
+@keyframes skeleton-pulse {
+  from {
+    background-position: 100% 0;
+  }
+
+  to {
+    background-position: -100% 0;
+  }
+}

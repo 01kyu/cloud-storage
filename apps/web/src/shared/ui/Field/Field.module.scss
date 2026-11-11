@@ -1,0 +1,36 @@
+@use "variables" as vars;
+
+.root {
+  display: flex;
+  flex-direction: column;
+  gap: vars.$space-1;
+  width: 100%;
+}
+
+.labelRow {
+  display: inline-flex;
+  gap: vars.$space-1;
+  align-items: baseline;
+}
+
+.label {
+  font-size: vars.$font-size-sm;
+  font-weight: vars.$font-weight-medium;
+  color: var(--color-text);
+}
+
+.required {
+  color: var(--color-danger);
+}
+
+.hint {
+  margin: 0;
+  font-size: vars.$font-size-xs;
+  color: var(--color-text-muted);
+}
+
+.error {
+  margin: 0;
+  font-size: vars.$font-size-xs;
+  color: var(--color-danger);
+}

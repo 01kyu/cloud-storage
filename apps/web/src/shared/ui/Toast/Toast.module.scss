@@ -1,0 +1,116 @@
+@use "mixins" as *;
+@use "variables" as vars;
+
+.viewport {
+  position: fixed;
+  right: vars.$space-4;
+  bottom: vars.$space-4;
+  z-index: vars.$z-toast;
+  display: flex;
+  flex-direction: column;
+  gap: vars.$space-2;
+  width: min(360px, calc(100vw - #{vars.$space-6}));
+  max-height: 100dvh;
+  padding: 0;
+  margin: 0;
+  list-style: none;
+  outline: none;
+}
+
+.root {
+  display: flex;
+  gap: vars.$space-2;
+  align-items: flex-start;
+  padding: vars.$space-3 vars.$space-4;
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-left: 3px solid var(--color-accent);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-md);
+  animation: toast-in vars.$duration-base vars.$easing-standard;
+
+  &[data-state="closed"] {
+    animation: toast-out vars.$duration-fast vars.$easing-standard;
+  }
+}
+
+.info {
+  border-left-color: var(--color-accent);
+}
+
+.success {
+  border-left-color: var(--color-success);
+}
+
+.danger {
+  border-left-color: var(--color-danger);
+}
+
+.title {
+  font-size: vars.$font-size-md;
+  font-weight: vars.$font-weight-medium;
+}
+
+.description {
+  margin-top: vars.$space-1;
+  font-size: vars.$font-size-sm;
+  color: var(--color-text-muted);
+}
+
+.action {
+  flex: none;
+  padding: vars.$space-1 vars.$space-2;
+  margin-left: auto;
+  font-size: vars.$font-size-sm;
+  font-weight: vars.$font-weight-medium;
+  color: var(--color-accent);
+  cursor: pointer;
+  background-color: transparent;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+
+  &:hover {
+    background-color: var(--color-surface-hover);
+  }
+
+  &:focus-visible {
+    @include focus-ring;
+  }
+}
+
+.close {
+  @include flex-center;
+
+  flex: none;
+  width: 24px;
+  height: 24px;
+  margin-left: auto;
+  color: var(--color-text-muted);
+  cursor: pointer;
+  background-color: transparent;
+  border: 0;
+  border-radius: var(--radius-sm);
+
+  &:hover {
+    color: var(--color-text);
+    background-color: var(--color-surface-hover);
+  }
+
+  &:focus-visible {
+    @include focus-ring;
+  }
+}
+
+@keyframes toast-in {
+  from {
+    opacity: 0;
+    transform: translateX(16px);
+  }
+}
+
+@keyframes toast-out {
+  to {
+    opacity: 0;
+    transform: translateX(16px);
+  }
+}

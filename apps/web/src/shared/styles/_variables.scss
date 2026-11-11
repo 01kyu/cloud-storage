@@ -1,0 +1,69 @@
+// Compile-time токены: значения, известные на этапе сборки.
+// Runtime-токены (цвета, тени) живут в globals.scss как CSS-переменные.
+
+$breakpoints: (
+  "sm": 640px,
+  "md": 768px,
+  "lg": 1024px,
+  "xl": 1280px,
+);
+
+$radius-sm: 4px;
+$radius-md: 8px;
+$radius-lg: 12px;
+$radius-full: 999px;
+
+$space-1: 4px;
+$space-2: 8px;
+$space-3: 12px;
+$space-4: 16px;
+$space-5: 24px;
+$space-6: 32px;
+$space-7: 48px;
+$space-8: 64px;
+
+$z-dropdown: 1000;
+$z-sticky: 1100;
+$z-modal: 1300;
+$z-toast: 1400;
+
+$control-height-sm: 32px;
+$control-height-md: 40px;
+$control-height-lg: 48px;
+
+$icon-sm: 16px;
+$icon-md: 20px;
+$icon-lg: 24px;
+
+$tooltip-max-width: 280px;
+$popover-min-width: 220px;
+$modal-max-width-sm: 400px;
+$modal-max-width-md: 520px;
+$modal-max-width-lg: 720px;
+
+$duration-fast: 120ms;
+$duration-base: 200ms;
+$easing-standard: cubic-bezier(0.2, 0, 0, 1);
+
+$header-height: 56px;
+$sidebar-width: 260px;
+
+$font-family-base:
+  "Inter",
+  "Segoe UI",
+  system-ui,
+  -apple-system,
+  sans-serif;
+$font-size-xs: 12px;
+$font-size-sm: 13px;
+$font-size-md: 14px;
+$font-size-lg: 16px;
+$font-size-xl: 20px;
+$font-size-2xl: 24px;
+
+$line-height-tight: 1.2;
+$line-height-normal: 1.5;
+
+$font-weight-regular: 400;
+$font-weight-medium: 500;
+$font-weight-bold: 600;

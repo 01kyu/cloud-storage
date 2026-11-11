@@ -1,0 +1,51 @@
+@use "mixins" as *;
+@use "variables" as vars;
+
+.root {
+  display: inline-flex;
+  gap: 2px;
+  padding: 2px;
+  background-color: var(--color-surface-muted);
+  border-radius: var(--radius-md);
+}
+
+.item {
+  display: inline-flex;
+  gap: vars.$space-1;
+  align-items: center;
+  justify-content: center;
+  height: vars.$control-height-sm;
+  padding: 0 vars.$space-3;
+  font-size: vars.$font-size-sm;
+  color: var(--color-text-muted);
+  cursor: pointer;
+  background-color: transparent;
+  border: 0;
+  border-radius: calc(var(--radius-md) - 2px);
+  transition:
+    background-color vars.$duration-fast vars.$easing-standard,
+    color vars.$duration-fast vars.$easing-standard;
+
+  &:hover:not(:disabled) {
+    color: var(--color-text);
+  }
+
+  &:focus-visible {
+    @include focus-ring;
+  }
+
+  &:disabled {
+    cursor: not-allowed;
+    opacity: 0.55;
+  }
+
+  &[data-state="on"] {
+    color: var(--color-text);
+    background-color: var(--color-surface);
+    box-shadow: var(--shadow-sm);
+  }
+}
+
+.label {
+  @include truncate;
+}

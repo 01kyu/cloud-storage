@@ -1,0 +1,199 @@
+@use "variables" as vars;
+@use "mixins" as *;
+
+.root {
+  display: flex;
+  flex-direction: column;
+  gap: vars.$space-4;
+}
+
+.header {
+  display: flex;
+  flex-wrap: wrap;
+  gap: vars.$space-3;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: vars.$space-2;
+  align-items: center;
+}
+
+.title {
+  margin: 0;
+  font-size: vars.$font-size-2xl;
+  font-weight: var(--font-weight-bold);
+  line-height: var(--line-height-tight);
+  color: var(--color-text);
+
+  @include truncate;
+}
+
+.list {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+
+.rowItem {
+  min-width: 0;
+}
+
+.row {
+  display: flex;
+  gap: vars.$space-2;
+  align-items: center;
+  padding: vars.$space-2 vars.$space-3;
+  border-radius: var(--radius-md);
+  transition: background-color vars.$duration-fast vars.$easing-standard;
+
+  &:hover {
+    background-color: var(--color-surface-hover);
+  }
+}
+
+/** Кликабельная часть строки: ссылка на папку или карточка файла. */
+.rowLink {
+  display: flex;
+  flex: 1;
+  gap: vars.$space-3;
+  align-items: center;
+  min-width: 0;
+  border-radius: var(--radius-sm);
+
+  &:focus-visible {
+    @include focus-ring;
+  }
+}
+
+/** Цель переноса: подсветка папки, на которую наведён перетаскиваемый узел. */
+.rowLink[data-drop-target],
+.cardLink[data-drop-target] {
+  outline: 2px dashed var(--color-accent);
+  outline-offset: 2px;
+}
+
+.actionsButton {
+  flex: none;
+  color: var(--color-text-muted);
+  opacity: 0.6;
+
+  &:hover,
+  &:focus-visible {
+    opacity: 1;
+  }
+}
+
+.downloadError {
+  margin: 0;
+  font-size: vars.$font-size-sm;
+  color: var(--color-danger);
+}
+
+.rowMain {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.rowName {
+  font-size: vars.$font-size-md;
+  color: var(--color-text);
+
+  @include truncate;
+}
+
+.rowMeta {
+  display: flex;
+  gap: vars.$space-1;
+  align-items: center;
+  font-size: vars.$font-size-xs;
+  color: var(--color-text-muted);
+}
+
+.dot {
+  color: var(--color-text-disabled);
+}
+
+.rowDate {
+  flex: none;
+  font-size: vars.$font-size-xs;
+  color: var(--color-text-muted);
+  white-space: nowrap;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: vars.$space-3;
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+
+.cardItem {
+  min-width: 0;
+}
+
+.card {
+  display: flex;
+  gap: vars.$space-1;
+  height: 100%;
+  padding: vars.$space-3;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  transition:
+    border-color vars.$duration-fast vars.$easing-standard,
+    background-color vars.$duration-fast vars.$easing-standard;
+
+  &:hover {
+    background-color: var(--color-surface-hover);
+    border-color: var(--color-border-strong);
+  }
+}
+
+/** Кликабельная часть карточки: ссылка на папку или статичный файл. */
+.cardLink {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: vars.$space-1;
+  align-items: flex-start;
+  min-width: 0;
+  text-align: left;
+  border-radius: var(--radius-sm);
+
+  &:focus-visible {
+    @include focus-ring;
+  }
+}
+
+.cardName {
+  max-width: 100%;
+  margin-top: vars.$space-1;
+  font-size: vars.$font-size-md;
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text);
+
+  @include truncate;
+}
+
+.cardMeta {
+  font-size: vars.$font-size-xs;
+  color: var(--color-text-muted);
+
+  @include truncate;
+}
+
+.cardDate {
+  font-size: vars.$font-size-xs;
+  color: var(--color-text-disabled);
+}

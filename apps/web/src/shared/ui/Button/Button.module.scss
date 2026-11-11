@@ -1,0 +1,105 @@
+@use "mixins" as *;
+@use "variables" as vars;
+
+.root {
+  display: inline-flex;
+  gap: vars.$space-2;
+  align-items: center;
+  justify-content: center;
+  height: vars.$control-height-md;
+  padding: 0 vars.$space-4;
+  font-size: vars.$font-size-md;
+  font-weight: vars.$font-weight-medium;
+  line-height: 1;
+  color: var(--color-accent-contrast);
+  white-space: nowrap;
+  cursor: pointer;
+  user-select: none;
+  background-color: transparent;
+  border: 1px solid transparent;
+  border-radius: var(--radius-md);
+  transition:
+    background-color vars.$duration-fast vars.$easing-standard,
+    border-color vars.$duration-fast vars.$easing-standard,
+    color vars.$duration-fast vars.$easing-standard;
+
+  &:focus-visible {
+    @include focus-ring;
+  }
+
+  &:disabled {
+    cursor: not-allowed;
+    opacity: 0.55;
+  }
+}
+
+.primary {
+  background-color: var(--color-accent);
+
+  &:hover:not(:disabled) {
+    background-color: var(--color-accent-hover);
+  }
+}
+
+.secondary {
+  color: var(--color-text);
+  background-color: var(--color-surface);
+  border-color: var(--color-border);
+
+  &:hover:not(:disabled) {
+    background-color: var(--color-surface-hover);
+  }
+}
+
+.ghost {
+  color: var(--color-text);
+
+  &:hover:not(:disabled) {
+    background-color: var(--color-surface-hover);
+  }
+}
+
+.danger {
+  background-color: var(--color-danger);
+
+  &:hover:not(:disabled) {
+    background-color: var(--color-danger-hover);
+  }
+}
+
+.sm {
+  height: vars.$control-height-sm;
+  padding: 0 vars.$space-3;
+  font-size: vars.$font-size-sm;
+}
+
+.md {
+  height: vars.$control-height-md;
+}
+
+.lg {
+  height: vars.$control-height-lg;
+  padding: 0 vars.$space-5;
+  font-size: vars.$font-size-lg;
+}
+
+.fullWidth {
+  width: 100%;
+}
+
+.label {
+  display: block;
+
+  @include truncate;
+}
+
+.spinner {
+  flex: none;
+  animation: spin 800ms linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}

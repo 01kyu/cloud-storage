@@ -1,0 +1,23 @@
+@use "variables" as vars;
+
+.root {
+  width: 100%;
+  overflow: hidden;
+  background-color: var(--color-surface-muted);
+  border-radius: var(--radius-full);
+}
+
+.md {
+  height: 8px;
+}
+
+.sm {
+  height: 4px;
+}
+
+.indicator {
+  width: 100%;
+  height: 100%;
+  background-color: var(--progress-color, var(--color-accent));
+  transition: transform vars.$duration-base vars.$easing-standard;
+}

@@ -1,0 +1,24 @@
+@use "variables" as vars;
+
+.content {
+  z-index: vars.$z-dropdown;
+  max-width: vars.$tooltip-max-width;
+  padding: vars.$space-1 vars.$space-2;
+  font-size: vars.$font-size-xs;
+  line-height: vars.$line-height-normal;
+  color: var(--color-accent-contrast);
+  background-color: var(--color-text);
+  border-radius: var(--radius-sm);
+  animation: tooltip-in vars.$duration-fast vars.$easing-standard;
+}
+
+.arrow {
+  fill: var(--color-text);
+}
+
+@keyframes tooltip-in {
+  from {
+    opacity: 0;
+    transform: scale(0.96);
+  }
+}

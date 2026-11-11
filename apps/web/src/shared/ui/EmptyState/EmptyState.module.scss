@@ -1,0 +1,43 @@
+@use "variables" as vars;
+@use "mixins" as *;
+
+.root {
+  display: flex;
+  flex-direction: column;
+  gap: vars.$space-2;
+  align-items: center;
+  justify-content: center;
+  padding: vars.$space-7 vars.$space-4;
+  text-align: center;
+}
+
+.icon {
+  @include flex-center;
+
+  width: 56px;
+  height: 56px;
+  margin-bottom: vars.$space-2;
+  color: var(--color-accent);
+  background-color: var(--color-accent-soft);
+  border-radius: var(--radius-full);
+}
+
+.title {
+  margin: 0;
+  font-size: vars.$font-size-lg;
+  font-weight: var(--font-weight-medium);
+  line-height: var(--line-height-tight);
+  color: var(--color-text);
+}
+
+.description {
+  max-width: 360px;
+  margin: 0;
+  font-size: vars.$font-size-sm;
+  line-height: var(--line-height-normal);
+  color: var(--color-text-muted);
+}
+
+.action {
+  margin-top: vars.$space-2;
+}

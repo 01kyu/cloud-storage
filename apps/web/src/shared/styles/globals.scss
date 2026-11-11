@@ -1,0 +1,106 @@
+@use "variables" as vars;
+
+:root {
+  color-scheme: light;
+
+  --color-bg: #f7f8fa;
+  --color-surface: #fff;
+  --color-surface-muted: #f0f2f5;
+  --color-surface-hover: #eceff3;
+  --color-surface-active: #e3e7ed;
+  --color-border: #dfe3e8;
+  --color-border-strong: #c6ccd4;
+  --color-text: #16181d;
+  --color-text-muted: #5b6470;
+  --color-text-disabled: #9aa3ae;
+  --color-accent: #3b6cf6;
+  --color-accent-hover: #2f5ce0;
+  --color-accent-soft: #e8eeff;
+  --color-accent-contrast: #fff;
+  --color-danger: #e5484d;
+  --color-danger-hover: #d13b40;
+  --color-danger-soft: #fdecec;
+  --color-success: #2f9e44;
+  --color-success-soft: #e7f6ec;
+  --color-warning: #b7791f;
+  --color-overlay: rgb(16 24 40 / 45%);
+  --color-focus-ring: var(--color-accent);
+  --shadow-sm: 0 1px 2px rgb(16 24 40 / 8%);
+  --shadow-md: 0 8px 24px rgb(16 24 40 / 12%);
+  --shadow-lg: 0 16px 40px rgb(16 24 40 / 18%);
+  --radius-sm: #{vars.$radius-sm};
+  --radius-md: #{vars.$radius-md};
+  --radius-lg: #{vars.$radius-lg};
+  --font-family-base: #{vars.$font-family-base};
+  --header-height: #{vars.$header-height};
+  --sidebar-width: #{vars.$sidebar-width};
+}
+
+:root[data-theme="dark"] {
+  color-scheme: dark;
+
+  --color-bg: #0f1115;
+  --color-surface: #171a21;
+  --color-surface-muted: #1f232c;
+  --color-surface-hover: #232833;
+  --color-surface-active: #2a303b;
+  --color-border: #2b3038;
+  --color-border-strong: #3a414d;
+  --color-text: #f2f4f8;
+  --color-text-muted: #9aa4b2;
+  --color-text-disabled: #6b7482;
+  --color-accent: #6f8dff;
+  --color-accent-hover: #8aa3ff;
+  --color-accent-soft: #1c2440;
+  --color-accent-contrast: #0b0d12;
+  --color-danger: #ff6369;
+  --color-danger-hover: #ff8085;
+  --color-danger-soft: #35191c;
+  --color-success: #3dd68c;
+  --color-success-soft: #14291f;
+  --color-warning: #e3b341;
+  --color-overlay: rgb(0 0 0 / 60%);
+  --color-focus-ring: var(--color-accent);
+  --shadow-sm: 0 1px 2px rgb(0 0 0 / 40%);
+  --shadow-md: 0 8px 24px rgb(0 0 0 / 40%);
+  --shadow-lg: 0 16px 40px rgb(0 0 0 / 55%);
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  padding: 0;
+  margin: 0;
+}
+
+body {
+  min-height: 100dvh;
+  font-family: var(--font-family-base);
+  font-size: vars.$font-size-md;
+  line-height: vars.$line-height-normal;
+  color: var(--color-text);
+  background-color: var(--color-bg);
+  -webkit-font-smoothing: antialiased;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+button,
+input,
+textarea,
+select {
+  font: inherit;
+}
+
+:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
+}

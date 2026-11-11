@@ -1,0 +1,54 @@
+@use "mixins" as *;
+@use "variables" as vars;
+
+.list {
+  display: flex;
+  gap: vars.$space-1;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.trigger {
+  position: relative;
+  padding: vars.$space-2 vars.$space-3;
+  font-size: vars.$font-size-md;
+  font-weight: vars.$font-weight-medium;
+  color: var(--color-text-muted);
+  cursor: pointer;
+  background-color: transparent;
+  border: 0;
+
+  &::after {
+    position: absolute;
+    right: vars.$space-3;
+    bottom: -1px;
+    left: vars.$space-3;
+    height: 2px;
+    content: "";
+    background-color: transparent;
+    border-radius: vars.$radius-full;
+  }
+
+  &:hover {
+    color: var(--color-text);
+  }
+
+  &:focus-visible {
+    @include focus-ring;
+  }
+
+  &[data-state="active"] {
+    color: var(--color-text);
+
+    &::after {
+      background-color: var(--color-accent);
+    }
+  }
+}
+
+.content {
+  padding-top: vars.$space-4;
+
+  &:focus-visible {
+    @include focus-ring;
+  }
+}

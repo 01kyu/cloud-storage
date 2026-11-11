@@ -1,0 +1,139 @@
+@use "mixins" as *;
+@use "variables" as vars;
+
+.overlay {
+  position: fixed;
+  inset: 0;
+  z-index: vars.$z-modal;
+  background-color: var(--color-overlay);
+  animation: overlay-in vars.$duration-base vars.$easing-standard;
+
+  &[data-state="closed"] {
+    animation: overlay-out vars.$duration-fast vars.$easing-standard;
+  }
+}
+
+.content {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  z-index: vars.$z-modal;
+  display: flex;
+  flex-direction: column;
+  gap: vars.$space-4;
+  width: calc(100% - #{vars.$space-6});
+  max-height: 85dvh;
+  padding: vars.$space-5;
+  overflow-y: auto;
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-lg);
+  transform: translate(-50%, -50%);
+  animation: content-in vars.$duration-base vars.$easing-standard;
+
+  &[data-state="closed"] {
+    animation: content-out vars.$duration-fast vars.$easing-standard;
+  }
+
+  &:focus-visible {
+    @include focus-ring;
+  }
+}
+
+.sm {
+  max-width: vars.$modal-max-width-sm;
+}
+
+.md {
+  max-width: vars.$modal-max-width-md;
+}
+
+.lg {
+  max-width: vars.$modal-max-width-lg;
+}
+
+.header {
+  display: flex;
+  gap: vars.$space-3;
+  align-items: flex-start;
+  justify-content: space-between;
+}
+
+.heading {
+  display: flex;
+  flex-direction: column;
+  gap: vars.$space-1;
+}
+
+.title {
+  margin: 0;
+  font-size: vars.$font-size-lg;
+  font-weight: vars.$font-weight-bold;
+  line-height: vars.$line-height-tight;
+}
+
+.description {
+  margin: 0;
+  font-size: vars.$font-size-sm;
+  color: var(--color-text-muted);
+}
+
+.close {
+  @include flex-center;
+
+  flex: none;
+  width: vars.$control-height-sm;
+  height: vars.$control-height-sm;
+  color: var(--color-text-muted);
+  cursor: pointer;
+  background-color: transparent;
+  border: 0;
+  border-radius: var(--radius-md);
+
+  &:hover {
+    color: var(--color-text);
+    background-color: var(--color-surface-hover);
+  }
+
+  &:focus-visible {
+    @include focus-ring;
+  }
+}
+
+.body {
+  font-size: vars.$font-size-md;
+}
+
+.footer {
+  display: flex;
+  flex-wrap: wrap;
+  gap: vars.$space-2;
+  justify-content: flex-end;
+}
+
+@keyframes overlay-in {
+  from {
+    opacity: 0;
+  }
+}
+
+@keyframes overlay-out {
+  to {
+    opacity: 0;
+  }
+}
+
+@keyframes content-in {
+  from {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0.96);
+  }
+}
+
+@keyframes content-out {
+  to {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0.96);
+  }
+}

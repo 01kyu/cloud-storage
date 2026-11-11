@@ -1,0 +1,44 @@
+@use "mixins" as *;
+@use "variables" as vars;
+
+.root {
+  display: block;
+  width: 100%;
+  height: vars.$control-height-md;
+  padding: 0 vars.$space-3;
+  font-size: vars.$font-size-md;
+  color: var(--color-text);
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  transition:
+    border-color vars.$duration-fast vars.$easing-standard,
+    box-shadow vars.$duration-fast vars.$easing-standard;
+
+  &::placeholder {
+    color: var(--color-text-muted);
+  }
+
+  &:hover:not(:disabled) {
+    border-color: var(--color-border-strong);
+  }
+
+  &:focus-visible {
+    @include focus-ring(1px);
+  }
+
+  &:disabled {
+    color: var(--color-text-disabled);
+    cursor: not-allowed;
+    background-color: var(--color-surface-muted);
+  }
+}
+
+.invalid {
+  border-color: var(--color-danger);
+
+  &:hover:not(:disabled),
+  &:focus-visible {
+    border-color: var(--color-danger);
+  }
+}

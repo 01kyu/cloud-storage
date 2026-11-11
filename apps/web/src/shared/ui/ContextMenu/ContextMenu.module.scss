@@ -1,0 +1,62 @@
+@use "variables" as vars;
+
+.content {
+  z-index: vars.$z-dropdown;
+  min-width: 180px;
+  max-width: 280px;
+  padding: vars.$space-1;
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-md);
+  animation: menu-in vars.$duration-fast vars.$easing-standard;
+}
+
+.item {
+  display: flex;
+  gap: vars.$space-2;
+  align-items: center;
+  padding: vars.$space-1 vars.$space-2;
+  font-size: vars.$font-size-md;
+  color: var(--color-text);
+  cursor: pointer;
+  user-select: none;
+  outline: none;
+  border-radius: var(--radius-sm);
+
+  &[data-highlighted] {
+    background-color: var(--color-surface-hover);
+  }
+
+  &[data-disabled] {
+    color: var(--color-text-disabled);
+    cursor: not-allowed;
+  }
+}
+
+.danger {
+  color: var(--color-danger);
+
+  &[data-highlighted] {
+    background-color: var(--color-danger-soft);
+  }
+}
+
+.label {
+  padding: vars.$space-1 vars.$space-2;
+  font-size: vars.$font-size-xs;
+  color: var(--color-text-muted);
+}
+
+.separator {
+  height: 1px;
+  margin: vars.$space-1 0;
+  background-color: var(--color-border);
+}
+
+@keyframes menu-in {
+  from {
+    opacity: 0;
+    transform: scale(0.97);
+  }
+}

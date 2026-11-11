@@ -1,0 +1,52 @@
+@use "variables" as vars;
+
+.root {
+  display: grid;
+  place-items: center;
+  min-height: 100dvh;
+  padding: vars.$space-5 vars.$space-4;
+}
+
+.panel {
+  display: flex;
+  flex-direction: column;
+  gap: vars.$space-4;
+  width: 100%;
+  max-width: 420px;
+  padding: vars.$space-6;
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-md);
+}
+
+.brand {
+  display: flex;
+  gap: vars.$space-2;
+  align-items: center;
+  font-size: vars.$font-size-lg;
+  font-weight: var(--font-weight-bold);
+  color: var(--color-text);
+}
+
+.brandIcon {
+  color: var(--color-accent);
+}
+
+.title {
+  margin: 0;
+  font-size: vars.$font-size-2xl;
+  line-height: vars.$line-height-tight;
+}
+
+.subtitle {
+  margin: calc(-1 * vars.$space-2) 0 0;
+  font-size: vars.$font-size-sm;
+  color: var(--color-text-muted);
+}
+
+.redirect {
+  margin: 0;
+  font-size: vars.$font-size-sm;
+  color: var(--color-text-muted);
+}

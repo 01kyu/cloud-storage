@@ -1,0 +1,164 @@
+@use "variables" as vars;
+@use "mixins" as *;
+
+.root {
+  display: grid;
+  grid-template-columns: var(--sidebar-width) minmax(0, 1fr);
+  min-height: 100dvh;
+
+  @media (width < 900px) {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+.sidebar {
+  display: flex;
+  flex-direction: column;
+  gap: vars.$space-3;
+  height: 100dvh;
+  padding: vars.$space-4;
+  overflow: hidden;
+  background-color: var(--color-surface);
+  border-right: 1px solid var(--color-border);
+
+  @media (width < 900px) {
+    height: auto;
+    border-right: 0;
+    border-bottom: 1px solid var(--color-border);
+  }
+}
+
+.brand {
+  display: flex;
+  gap: vars.$space-2;
+  align-items: center;
+  padding: vars.$space-1 vars.$space-2;
+  font-size: vars.$font-size-lg;
+  font-weight: var(--font-weight-bold);
+  color: var(--color-text);
+  border-radius: var(--radius-md);
+
+  &:focus-visible {
+    @include focus-ring;
+  }
+}
+
+.brandIcon {
+  color: var(--color-accent);
+}
+
+.nav {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+
+.navLink {
+  display: flex;
+  gap: vars.$space-2;
+  align-items: center;
+  height: vars.$control-height-sm;
+  padding: 0 vars.$space-2;
+  font-size: vars.$font-size-sm;
+  color: var(--color-text-muted);
+  border-radius: var(--radius-md);
+  transition:
+    background-color vars.$duration-fast vars.$easing-standard,
+    color vars.$duration-fast vars.$easing-standard;
+
+  &:hover {
+    color: var(--color-text);
+    background-color: var(--color-surface-hover);
+  }
+
+  &:focus-visible {
+    @include focus-ring;
+  }
+}
+
+.navLinkActive {
+  font-weight: var(--font-weight-medium);
+  color: var(--color-accent);
+  background-color: var(--color-accent-soft);
+
+  &:hover {
+    color: var(--color-accent);
+    background-color: var(--color-accent-soft);
+  }
+}
+
+.treeSection {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-height: 0;
+}
+
+.sectionTitle {
+  margin: 0 0 vars.$space-2;
+  font-size: vars.$font-size-xs;
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.treeScroll {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+}
+
+.treeSkeleton {
+  display: flex;
+  flex-direction: column;
+  gap: vars.$space-2;
+}
+
+.footer {
+  display: flex;
+  flex-direction: column;
+  gap: vars.$space-3;
+  padding-top: vars.$space-2;
+  border-top: 1px solid var(--color-border);
+}
+
+.user {
+  display: flex;
+  gap: vars.$space-2;
+  align-items: center;
+}
+
+.userText {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.userName {
+  font-size: vars.$font-size-sm;
+  font-weight: var(--font-weight-medium);
+
+  @include truncate;
+}
+
+.userEmail {
+  font-size: vars.$font-size-xs;
+  color: var(--color-text-muted);
+
+  @include truncate;
+}
+
+.content {
+  min-width: 0;
+  padding: vars.$space-5 vars.$space-6;
+
+  @media (width < 900px) {
+    padding: vars.$space-4;
+  }
+}

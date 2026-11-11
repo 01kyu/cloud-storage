@@ -1,0 +1,31 @@
+.root {
+  flex: none;
+}
+
+.folder {
+  color: var(--color-accent);
+}
+
+.image {
+  color: var(--color-success);
+}
+
+.video {
+  color: var(--color-danger);
+}
+
+.audio {
+  color: var(--color-warning);
+}
+
+.document {
+  color: var(--color-text-muted);
+}
+
+.archive {
+  color: var(--color-text-muted);
+}
+
+.other {
+  color: var(--color-text-muted);
+}

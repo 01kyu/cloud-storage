@@ -1,0 +1,49 @@
+@use "variables" as vars;
+@use "mixins" as *;
+
+.root {
+  min-width: 0;
+}
+
+.list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: vars.$space-1;
+  align-items: center;
+  padding: 0;
+  margin: 0;
+  font-size: vars.$font-size-sm;
+  list-style: none;
+}
+
+.item {
+  display: flex;
+  gap: vars.$space-1;
+  align-items: center;
+  min-width: 0;
+}
+
+.icon {
+  flex: none;
+  color: var(--color-text-disabled);
+}
+
+.link {
+  color: var(--color-text-muted);
+  border-radius: var(--radius-sm);
+
+  @include truncate;
+
+  &:hover {
+    color: var(--color-text);
+  }
+
+  &:focus-visible {
+    @include focus-ring;
+  }
+
+  &[aria-current="page"] {
+    font-weight: var(--font-weight-medium);
+    color: var(--color-text);
+  }
+}

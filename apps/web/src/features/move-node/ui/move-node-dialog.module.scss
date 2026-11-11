@@ -1,0 +1,18 @@
+@use "variables" as vars;
+
+.tree {
+  max-height: 280px;
+  overflow-y: auto;
+}
+
+.hint {
+  margin: 0;
+  font-size: vars.$font-size-sm;
+  color: var(--color-text-muted);
+}
+
+.formError {
+  margin: vars.$space-2 0 0;
+  font-size: vars.$font-size-sm;
+  color: var(--color-danger);
+}
