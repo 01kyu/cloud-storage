@@ -1,0 +1,2 @@
+# Только LF: prettier настроен на LF, CRLF в рабочей копии ломает format:check.
+* text=auto eol=lf
