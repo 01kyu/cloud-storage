@@ -8,6 +8,7 @@ import { HardDrive, Moon, Sun } from "lucide-react";
 import { buildFolderTree, FolderTree, useGetFolderTreeQuery } from "@entities/folder";
 import { QuotaCard, useCurrentUser } from "@entities/user";
 import { LogoutButton } from "@features/logout";
+import { SearchTrigger } from "@features/search-files";
 import { ROUTES } from "@shared/config";
 import { cn, useTheme } from "@shared/lib";
 import { Avatar, IconButton, Separator, Skeleton } from "@shared/ui";
@@ -34,7 +35,11 @@ const getActiveFolderId = (pathname: string): string | null => {
   return folderId ?? null;
 };
 
-export const AppSidebar = () => {
+export type AppSidebarProps = {
+  onSearchOpen: () => void;
+};
+
+export const AppSidebar = ({ onSearchOpen }: AppSidebarProps) => {
   const pathname = usePathname() ?? ROUTES.files;
   const activeFolderId = getActiveFolderId(pathname);
   const { data: folders, isLoading: isTreeLoading } = useGetFolderTreeQuery();
@@ -51,6 +56,8 @@ export const AppSidebar = () => {
         <HardDrive size={20} aria-hidden="true" className={styles.brandIcon} />
         <span>Cloud Storage</span>
       </Link>
+
+      <SearchTrigger onClick={onSearchOpen} />
 
       <nav aria-label="Основная навигация">
         <ul className={styles.nav}>

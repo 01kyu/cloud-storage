@@ -1,0 +1,17 @@
+@use "variables" as vars;
+
+.root {
+  justify-content: space-between;
+}
+
+.hotkey {
+  padding: 0 vars.$space-1;
+  font-family: inherit;
+  font-size: vars.$font-size-xs;
+  font-weight: vars.$font-weight-regular;
+  line-height: 1.4;
+  color: var(--color-text-muted);
+  background-color: var(--color-surface-muted);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+}

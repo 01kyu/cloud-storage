@@ -11,6 +11,8 @@ import {
   loginPayloadSchema,
   nodeSchema,
   publicShareSchema,
+  searchQuerySchema,
+  searchResponseSchema,
   shareSchema,
   trashItemSchema,
   uploadInitResponseSchema,
@@ -150,5 +152,26 @@ describe("контракт @cs/shared", () => {
     expect(
       listSchema.parse({ items: [validFolder, validFile], nextCursor: null }).items,
     ).toHaveLength(2);
+  });
+
+  it("валидирует запрос поиска: минимум символов, тип и вид файла", () => {
+    expect(searchQuerySchema.parse({ q: "  отчёт  " })).toMatchObject({ q: "отчёт" });
+    expect(
+      searchQuerySchema.parse({ q: "отчёт", type: NodeType.Folder, limit: "10" }),
+    ).toMatchObject({ type: NodeType.Folder, limit: 10 });
+    expect(searchQuerySchema.parse({ q: "отчёт", kind: "image" })).toMatchObject({
+      kind: "image",
+    });
+
+    expect(() => searchQuerySchema.parse({ q: "я" })).toThrow();
+    expect(() => searchQuerySchema.parse({ q: "отчёт", type: "unknown" })).toThrow();
+    expect(() => searchQuerySchema.parse({ q: "отчёт", kind: "unknown" })).toThrow();
+  });
+
+  it("валидирует ответ поиска как список узлов", () => {
+    const page = searchResponseSchema.parse({ items: [validFolder, validFile], nextCursor: "1" });
+
+    expect(page.items.map((item) => item.type)).toEqual([NodeType.Folder, NodeType.File]);
+    expect(page.nextCursor).toBe("1");
   });
 });
