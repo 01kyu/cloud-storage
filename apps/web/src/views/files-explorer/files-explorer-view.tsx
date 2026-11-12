@@ -6,12 +6,21 @@ import { FileExplorer } from "@widgets/file-explorer";
 
 export type FilesExplorerViewProps = {
   folderId: string | null;
+  /** Параметры возврата из поиска: `?highlight=<id>&q=<запрос>`. */
+  highlight?: {
+    nodeId: string | null;
+    query: string;
+  };
 };
 
-export const FilesExplorerView = ({ folderId }: FilesExplorerViewProps) => (
+export const FilesExplorerView = ({ folderId, highlight }: FilesExplorerViewProps) => (
   <RequireAuth>
     <AppShell>
-      <FileExplorer folderId={folderId} />
+      <FileExplorer
+        folderId={folderId}
+        highlightNodeId={highlight?.nodeId ?? null}
+        highlightQuery={highlight?.query ?? ""}
+      />
     </AppShell>
   </RequireAuth>
 );

@@ -42,7 +42,7 @@ const stubClipboard = () => {
 };
 
 const shareUrlField = async (): Promise<HTMLInputElement> =>
-  (await screen.findByRole("textbox", { name: "Публичная ссылка" })) as HTMLInputElement;
+  screen.findByRole<HTMLInputElement>("textbox", { name: "Публичная ссылка" });
 
 beforeEach(async () => {
   await signInAsDemo();

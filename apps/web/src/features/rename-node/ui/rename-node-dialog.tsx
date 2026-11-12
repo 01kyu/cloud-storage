@@ -67,7 +67,7 @@ export const RenameNodeDialog = ({ node, onOpenChange }: RenameNodeDialogProps) 
         title="Переименовать"
         description={node ? `Новое имя для «${node.name}»` : undefined}
       >
-        <form className={styles.form} onSubmit={onSubmit} noValidate>
+        <form className={styles.form} onSubmit={(event) => void onSubmit(event)} noValidate>
           <Field label="Название" error={errors.name?.message} required>
             <Input {...register("name")} />
           </Field>

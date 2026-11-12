@@ -3,6 +3,7 @@ import { delay, http, HttpResponse } from "msw";
 import {
   API_ROUTES,
   ApiErrorCode,
+  copyFilePayloadSchema,
   FileStatus,
   moveNodePayloadSchema,
   renameNodePayloadSchema,
@@ -14,6 +15,7 @@ import { findFile, getDb } from "../db";
 import { mockLatency } from "../latency";
 import {
   completeMockUpload,
+  copyMockFile,
   createUploadingFile,
   deleteMockNode,
   mockFileContent,
@@ -199,6 +201,39 @@ export const fileHandlers = [
     }
 
     return HttpResponse.json(result.node);
+  }),
+
+  /** Копия рядом с оригиналом: имя с суффиксом подбирает сервер, id — новый. */
+  http.post(apiRoute(API_ROUTES.files.copy(":fileId")), async ({ params, request }) => {
+    await delay(mockLatency());
+
+    const denied = guard();
+
+    if (denied) {
+      return denied;
+    }
+
+    const parsed = copyFilePayloadSchema.safeParse((await request.json().catch(() => null)) ?? {});
+
+    if (!parsed.success) {
+      return validationFailed("Укажите папку назначения или оставьте поле пустым");
+    }
+
+    const fileId = String(params.fileId);
+    const result = copyMockFile(fileId, parsed.data.targetFolderId);
+
+    if (!result.ok) {
+      switch (result.reason) {
+        case "not-found":
+          return notFound(`Файл ${fileId} не найден`);
+        case "target-not-found":
+          return notFound(`Папка ${parsed.data.targetFolderId ?? ""} не найдена`);
+        default:
+          return jsonError(413, ApiErrorCode.QuotaExceeded, "Недостаточно свободного места");
+      }
+    }
+
+    return HttpResponse.json(result.file, { status: 201 });
   }),
 
   http.delete(apiRoute(API_ROUTES.files.byId(":fileId")), async ({ params }) => {

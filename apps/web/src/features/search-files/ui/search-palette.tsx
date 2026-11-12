@@ -17,6 +17,7 @@ import {
   DropdownMenuRadioItem,
   DropdownMenuTrigger,
   Input,
+  LoadMore,
   Modal,
   ModalContent,
   Skeleton,
@@ -40,12 +41,12 @@ const describeResult = (node: Node): string =>
   node.type === NodeType.Folder ? `Папка · объектов: ${node.childCount}` : describeFile(node);
 
 /** Файл открывается в своей папке — отдельного роута у файла пока нет. */
-const hrefOf = (node: Node): string => {
+const hrefOf = (node: Node, query: string): string => {
   if (node.type === NodeType.Folder) {
     return ROUTES.folder(node.id);
   }
 
-  return node.folderId ? ROUTES.folder(node.folderId) : ROUTES.files;
+  return ROUTES.folderSearch(node.folderId, node.id, query);
 };
 
 export type SearchPaletteProps = {
@@ -61,15 +62,21 @@ export const SearchPalette = ({ open, onOpenChange }: SearchPaletteProps) => {
   const [filter, setFilter] = useState<SearchFilter>(SearchFilter.All);
   const [activeIndex, setActiveIndex] = useState(0);
 
-  const { results, isReady, isFetching, isError, refetch } = useSearch(term, filter);
+  const { results, hasMore, isReady, isFetching, isError, loadMore, refetch } = useSearch(
+    term,
+    filter,
+  );
   const activeResult = results[activeIndex];
 
-  /** Радикс отдаёт фокус кнопке «Закрыть», а палитре нужен ввод. */
-  useEffect(() => {
-    if (open) {
-      inputRef.current?.focus();
-    }
-  }, [open]);
+  /**
+   * Радикс отдаёт фокус первому элементу диалога (кнопке «Закрыть»), а палитре
+   * нужен ввод. Эффект `open` тут не годится: focus-scope ставит фокус сам
+   * и делает это после эффектов родителя, поэтому перехватываем его штатно.
+   */
+  const focusInput = (event: Event): void => {
+    event.preventDefault();
+    inputRef.current?.focus();
+  };
 
   useEffect(() => {
     if (!open) {
@@ -91,7 +98,7 @@ export const SearchPalette = ({ open, onOpenChange }: SearchPaletteProps) => {
 
   const openNode = (node: Node): void => {
     onOpenChange(false);
-    router.push(hrefOf(node));
+    router.push(hrefOf(node, term));
   };
 
   const handleKeyDown = (event: KeyboardEvent<HTMLInputElement>): void => {
@@ -195,6 +202,7 @@ export const SearchPalette = ({ open, onOpenChange }: SearchPaletteProps) => {
         description="Папки и файлы по имени — по всему хранилищу."
         size="lg"
         className={styles.dialog}
+        onOpenAutoFocus={focusInput}
       >
         <div className={styles.controls}>
           <div className={styles.field}>
@@ -236,7 +244,17 @@ export const SearchPalette = ({ open, onOpenChange }: SearchPaletteProps) => {
           </DropdownMenu>
         </div>
 
-        <div className={styles.results}>{renderResults()}</div>
+        <div className={styles.results}>
+          {renderResults()}
+          {results.length > 0 ? (
+            <LoadMore
+              hasMore={hasMore}
+              loadedCount={results.length}
+              loading={isFetching}
+              onLoadMore={loadMore}
+            />
+          ) : null}
+        </div>
 
         <footer className={styles.hints}>
           <span>

@@ -79,6 +79,19 @@
   outline-offset: 2px;
 }
 
+/** Цель перехода из поиска (`?highlight=<id>`): фон ссылки, без сдвига hover-стилей. */
+.highlighted {
+  background-color: var(--color-accent-soft);
+  box-shadow: inset 2px 0 0 var(--color-accent);
+}
+
+/** Совпадение с поисковым запросом (`?q=`) внутри имени. */
+.match {
+  font-weight: var(--font-weight-medium);
+  color: var(--color-accent);
+  background-color: transparent;
+}
+
 .actionsButton {
   flex: none;
   color: var(--color-text-muted);

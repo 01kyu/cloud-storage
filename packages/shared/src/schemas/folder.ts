@@ -37,3 +37,14 @@ export const moveNodePayloadSchema = z.object({
 });
 
 export type MoveNodePayload = z.infer<typeof moveNodePayloadSchema>;
+
+/**
+ * Копия файла создаётся рядом с оригиналом: имя подбирает сервер
+ * («Отчёт.pdf» → «Отчёт (копия).pdf»). `targetFolderId` нужен, чтобы
+ * скопировать файл в другую папку, не перемещая оригинал.
+ */
+export const copyFilePayloadSchema = z.object({
+  targetFolderId: idSchema.nullable().optional(),
+});
+
+export type CopyFilePayload = z.infer<typeof copyFilePayloadSchema>;

@@ -150,7 +150,7 @@ export const ShareNodeDialog = ({ node, onOpenChange }: ShareNodeDialogProps) =>
             </div>
           </div>
         ) : (
-          <form className={styles.form} onSubmit={onSubmit} noValidate>
+          <form className={styles.form} onSubmit={(event) => void onSubmit(event)} noValidate>
             <div className={styles.group}>
               <span className={styles.label}>Права доступа</span>
               <Controller

@@ -3,7 +3,8 @@ import { rootApi } from "@shared/api";
 
 /**
  * Поиск не кешируется «навсегда»: результат зависит от запроса, поэтому ключ
- * кеша — сами параметры. Теги нужны, чтобы переименование/удаление обновляло выдачу.
+ * кеша — сам запрос и фильтры (но не `limit`: догрузка расширяет его в том же
+ * кеше). Теги нужны, чтобы переименование/удаление обновляло выдачу.
  */
 export const searchApi = rootApi.injectEndpoints({
   endpoints: (builder) => ({
@@ -20,6 +21,9 @@ export const searchApi = rootApi.injectEndpoints({
         },
       }),
       providesTags: ["Folder", "File"],
+      serializeQueryArgs: ({ endpointName, queryArgs }) =>
+        `${endpointName}:${queryArgs.q}:${queryArgs.type ?? ""}:${queryArgs.kind ?? ""}:${queryArgs.sort ?? ""}`,
+      forceRefetch: ({ currentArg, previousArg }) => currentArg?.limit !== previousArg?.limit,
     }),
   }),
 });

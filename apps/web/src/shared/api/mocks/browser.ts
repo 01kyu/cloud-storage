@@ -18,6 +18,6 @@ export const startMocking = async (): Promise<void> => {
 };
 
 export const stopMocking = (): void => {
-  worker?.stop();
+  void worker?.stop();
   worker = null;
 };

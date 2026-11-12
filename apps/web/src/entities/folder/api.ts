@@ -13,7 +13,8 @@ import { rootApi } from "@shared/api";
 export type FolderChildrenArgs = {
   /** `null` — корень хранилища. */
   folderId: string | null;
-  cursor?: string;
+  /** Сколько элементов вернуть: «Показать ещё» расширяет это значение. */
+  limit?: number;
   /** Серверная сортировка листинга в формате `field:direction`. */
   sort?: string;
 };
@@ -25,11 +26,15 @@ export type MoveFolderArgs = MoveNodePayload & { folderId: string };
 export const folderApi = rootApi.injectEndpoints({
   endpoints: (builder) => ({
     getFolderChildren: builder.query<ListResponse<Node>, FolderChildrenArgs>({
-      query: ({ folderId, cursor, sort }) => ({
+      query: ({ folderId, limit, sort }) => ({
         url: folderId ? API_ROUTES.folders.children(folderId) : API_ROUTES.folders.root,
-        params: { ...(cursor ? { cursor } : {}), ...(sort ? { sort } : {}) },
+        params: { ...(limit ? { limit } : {}), ...(sort ? { sort } : {}) },
       }),
       providesTags: ["Folder", "File"],
+      /** Один кеш на папку и сортировку: «Показать ещё» меняет `limit`, а не ключ. */
+      serializeQueryArgs: ({ endpointName, queryArgs }) =>
+        `${endpointName}:${queryArgs.folderId ?? "root"}:${queryArgs.sort ?? ""}`,
+      forceRefetch: ({ currentArg, previousArg }) => currentArg?.limit !== previousArg?.limit,
     }),
 
     getFolderTree: builder.query<Folder[], void>({

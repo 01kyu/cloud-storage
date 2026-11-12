@@ -1,9 +1,10 @@
 "use client";
 
 import { useState, type ReactNode } from "react";
-import { Download, FolderInput, MoreHorizontal, Pencil, Share2, Trash2 } from "lucide-react";
+import { Copy, Download, FolderInput, MoreHorizontal, Pencil, Share2, Trash2 } from "lucide-react";
 
 import { NodeType, type Node } from "@cs/shared";
+import { useCopyFile } from "@features/copy-node";
 import { ShareNodeDialog } from "@features/create-share-link";
 import { DeleteNodeDialog } from "@features/delete-node";
 import { useDownloadFile } from "@features/download-file";
@@ -29,16 +30,24 @@ type NodeAction = "rename" | "move" | "share" | "delete";
 
 type ActionsListProps = {
   isFile: boolean;
+  isCopying: boolean;
   onAction: (action: NodeAction) => void;
+  onCopy: () => void;
   onDownload: () => void;
 };
 
-const ContextActions = ({ isFile, onAction, onDownload }: ActionsListProps) => (
+const ContextActions = ({ isFile, isCopying, onAction, onCopy, onDownload }: ActionsListProps) => (
   <>
     {isFile ? (
       <ContextMenuItem onSelect={onDownload}>
         <Download size={14} aria-hidden="true" />
         Скачать
+      </ContextMenuItem>
+    ) : null}
+    {isFile ? (
+      <ContextMenuItem disabled={isCopying} onSelect={onCopy}>
+        <Copy size={14} aria-hidden="true" />
+        Копировать
       </ContextMenuItem>
     ) : null}
     <ContextMenuItem onSelect={() => onAction("rename")}>
@@ -62,12 +71,18 @@ const ContextActions = ({ isFile, onAction, onDownload }: ActionsListProps) => (
 );
 
 /** То же меню для кнопки «⋮»: контекстное меню недоступно с клавиатуры. */
-const DropdownActions = ({ isFile, onAction, onDownload }: ActionsListProps) => (
+const DropdownActions = ({ isFile, isCopying, onAction, onCopy, onDownload }: ActionsListProps) => (
   <>
     {isFile ? (
       <DropdownMenuItem onSelect={onDownload}>
         <Download size={14} aria-hidden="true" />
         Скачать
+      </DropdownMenuItem>
+    ) : null}
+    {isFile ? (
+      <DropdownMenuItem disabled={isCopying} onSelect={onCopy}>
+        <Copy size={14} aria-hidden="true" />
+        Копировать
       </DropdownMenuItem>
     ) : null}
     <DropdownMenuItem onSelect={() => onAction("rename")}>
@@ -102,6 +117,7 @@ export type NodeActionsProps = {
 export const NodeActions = ({ node, children }: NodeActionsProps) => {
   const [action, setAction] = useState<NodeAction | null>(null);
   const { download } = useDownloadFile();
+  const { copy, isCopying } = useCopyFile();
   const isFile = node.type === NodeType.File;
 
   const handleDownload = (): void => {
@@ -110,12 +126,24 @@ export const NodeActions = ({ node, children }: NodeActionsProps) => {
     }
   };
 
+  const handleCopy = (): void => {
+    if (node.type === NodeType.File) {
+      void copy(node);
+    }
+  };
+
   return (
     <>
       <ContextMenu>
         <ContextMenuTrigger asChild>{children}</ContextMenuTrigger>
         <ContextMenuContent>
-          <ContextActions isFile={isFile} onAction={setAction} onDownload={handleDownload} />
+          <ContextActions
+            isFile={isFile}
+            isCopying={isCopying}
+            onAction={setAction}
+            onCopy={handleCopy}
+            onDownload={handleDownload}
+          />
         </ContextMenuContent>
       </ContextMenu>
 
@@ -126,7 +154,13 @@ export const NodeActions = ({ node, children }: NodeActionsProps) => {
           </IconButton>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end">
-          <DropdownActions isFile={isFile} onAction={setAction} onDownload={handleDownload} />
+          <DropdownActions
+            isFile={isFile}
+            isCopying={isCopying}
+            onAction={setAction}
+            onCopy={handleCopy}
+            onDownload={handleDownload}
+          />
         </DropdownMenuContent>
       </DropdownMenu>
 

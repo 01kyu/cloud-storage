@@ -44,6 +44,29 @@
   align-items: center;
 }
 
+.selection {
+  display: flex;
+  flex-wrap: wrap;
+  gap: vars.$space-3;
+  align-items: center;
+  padding: vars.$space-2 vars.$space-3;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+}
+
+.selectionText {
+  flex: 1;
+  font-size: vars.$font-size-sm;
+  color: var(--color-text-muted);
+}
+
+.selectionActions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: vars.$space-2;
+  align-items: center;
+}
+
 .list {
   display: flex;
   flex-direction: column;

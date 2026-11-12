@@ -1,17 +1,21 @@
-import { API_BASE_PATH, API_ROUTES, DEMO_USER } from "@cs/shared";
+import { getDb, MOCK_SESSION_TOKEN, saveDb } from "@shared/api/mocks";
 
-/** Открывает сессию настоящим запросом входа: в сидах сессии нет. */
-export const signInAsDemo = async (): Promise<void> => {
-  const response = await fetch(
-    `${window.location.origin}${API_BASE_PATH}${API_ROUTES.auth.login}`,
-    {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(DEMO_USER),
-    },
-  );
+/**
+ * Открывает сессию мока напрямую в БД: в сидах сессии нет.
+ *
+ * Раньше здесь был настоящий `POST /auth/login` через MSW, но реальный `fetch`
+ * в jsdom упирался в сеть и раз в несколько прогонов падал с `ECONNREFUSED`
+ * (после теста с отменой загрузки интерцептор MSW не перехватывал запрос).
+ * Сессия мока — это флаг `db.session`, поэтому сетевой вызов в подготовке тестов
+ * ничего не проверяет, зато добавляет флак и время.
+ *
+ * Функция остаётся асинхронной: её вызывают как `await signInAsDemo()`.
+ */
+export const signInAsDemo = (): Promise<void> => {
+  const db = getDb();
 
-  if (!response.ok) {
-    throw new Error(`Не удалось открыть тестовую сессию: ${response.status}`);
-  }
+  db.session = { token: MOCK_SESSION_TOKEN };
+  saveDb();
+
+  return Promise.resolve();
 };

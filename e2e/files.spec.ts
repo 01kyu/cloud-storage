@@ -5,7 +5,9 @@ import { dragHandle, listItem, login, openNodeMenu } from "./support/session";
 const UPLOAD_NAMES = ["e2e-отчёт.txt", "e2e-заметки.txt", "e2e-список.txt"];
 const FOLDER_NAME = "E2E папка";
 const SOURCE_FILE = "Скриншот.png";
+const ARCHIVE_FILE = "Бэкап-2025.zip";
 const RENAMED_FILE = "Скриншот 2.png";
+const COPY_FILE = "Скриншот (копия).png";
 
 /** Файлы для dropzone: `DataTransfer` с настоящими `File` — как при переносе из ОС. */
 const filesTransfer = (page: Page) =>
@@ -50,6 +52,32 @@ test.describe("файлы", { tag: "@files" }, () => {
     }
 
     await expect(quota).not.toHaveText(quotaBefore);
+  });
+
+  /** E2E №9: режим и сортировка переносятся ссылкой. */
+  test("сохраняет режим и сортировку в URL", async ({ page }) => {
+    await page.getByRole("radio", { name: "Сетка" }).click();
+    await expect(page).toHaveURL(/\?view=grid$/);
+
+    await page.getByRole("button", { name: "Сортировка: Имя" }).click();
+    await page.getByRole("menuitemradio", { name: "Размер" }).click();
+
+    // `:` в query кодируется браузером как `%3A` — принимаем оба варианта.
+    await expect(page).toHaveURL(/view=grid&sort=size(%3A|:)asc/);
+
+    await page.reload();
+    await expect(page.locator("[data-view='grid']")).toBeVisible();
+    await expect(page.getByRole("button", { name: "Сортировка: Размер" })).toBeVisible();
+  });
+
+  /** E2E №8: копия файла создаётся рядом с оригиналом через меню строки. */
+  test("копирует файл через меню строки", async ({ page }) => {
+    await openNodeMenu(page, SOURCE_FILE);
+    await page.getByRole("menuitem", { name: "Копировать" }).click();
+
+    await expect(listItem(page, COPY_FILE)).toBeVisible();
+    // Тост объявляется ещё и в `aria-live`-регионе, поэтому берём точное совпадение.
+    await expect(page.getByText(`Создана копия «${COPY_FILE}»`, { exact: true })).toBeVisible();
   });
 
   /** E2E №3: папка → перенос → переименование → удаление → корзина → восстановление. */
@@ -107,5 +135,36 @@ test.describe("файлы", { tag: "@files" }, () => {
     await openFolder(page, FOLDER_NAME);
 
     await expect(listItem(page, RENAMED_FILE)).toBeVisible();
+  });
+
+  /** E2E №10: выделение в корзине работает пачкой, а не только по одной строке. */
+  test("восстанавливает выбранные файлы из корзины", async ({ page }) => {
+    for (const name of [SOURCE_FILE, ARCHIVE_FILE]) {
+      await openNodeMenu(page, name);
+      await page.getByRole("menuitem", { name: "Удалить" }).click();
+      await page
+        .getByRole("dialog", { name: "Удалить файл?" })
+        .getByRole("button", { name: "Удалить" })
+        .click();
+
+      await expect(listItem(page, name)).toHaveCount(0);
+    }
+
+    await page.goto("/trash");
+
+    const trash = page.getByRole("region", { name: "Корзина" });
+
+    await expect(page.getByRole("heading", { name: "Корзина" })).toBeVisible();
+    await expect(trash.getByRole("listitem")).toHaveCount(2);
+
+    await trash.getByRole("checkbox", { name: "Выбрать все" }).click();
+    await expect(trash.getByText("Выбрано: 2")).toBeVisible();
+
+    await trash.getByRole("button", { name: "Восстановить (2)" }).click();
+    await expect(trash.getByText("Корзина пуста")).toBeVisible();
+
+    await page.goto("/files");
+    await expect(listItem(page, SOURCE_FILE)).toBeVisible();
+    await expect(listItem(page, ARCHIVE_FILE)).toBeVisible();
   });
 });

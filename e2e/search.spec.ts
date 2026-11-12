@@ -23,8 +23,10 @@ test.describe("поиск", { tag: "@search" }, () => {
 
     await input.press("Enter");
 
-    await expect(page).toHaveURL(/\/files\/[0-9a-f-]{36}$/);
+    // Файл открывается в своей папке с параметрами подсветки найденного объекта.
+    await expect(page).toHaveURL(/\/files\/[0-9a-f-]{36}\?highlight=[0-9a-f-]{36}&q=/);
     await expect(page.getByRole("heading", { name: "Отчёты" })).toBeVisible();
+    await expect(page.locator("mark")).toHaveText("Смета");
   });
 
   test("фильтр по типу оставляет только папки", async ({ page }) => {

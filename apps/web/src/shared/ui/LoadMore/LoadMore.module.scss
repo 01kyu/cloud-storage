@@ -1,0 +1,16 @@
+@use "variables" as vars;
+
+.root {
+  display: flex;
+  flex-direction: column;
+  gap: vars.$space-2;
+  align-items: center;
+  justify-content: center;
+  padding: vars.$space-4 0;
+}
+
+.counter {
+  margin: 0;
+  font-size: vars.$font-size-xs;
+  color: var(--color-text-muted);
+}

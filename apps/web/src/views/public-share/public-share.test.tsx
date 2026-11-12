@@ -156,6 +156,7 @@ describe("PublicShareView", () => {
     const { unmount } = renderWithProviders(<PublicShareView token="unknown-token-123" />);
 
     expect(await screen.findByText("Ссылка не найдена")).toBeInTheDocument();
+    expect(screen.getByRole("heading", { level: 1, name: "Доступ по ссылке" })).toBeInTheDocument();
 
     unmount();
 

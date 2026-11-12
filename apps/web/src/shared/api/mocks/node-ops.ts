@@ -222,6 +222,76 @@ export const completeMockUpload = (fileId: string, checksum: string): FileItem |
 
 export type MockFileContent = { content: string; mimeType: string };
 
+/** «Смета.xlsx» → база «Смета» и расширение «.xlsx» (с точкой). */
+const splitFileName = (name: string): { base: string; extension: string } => {
+  const dot = name.lastIndexOf(".");
+
+  return dot > 0
+    ? { base: name.slice(0, dot), extension: name.slice(dot) }
+    : { base: name, extension: "" };
+};
+
+/**
+ * Свободное имя для копии: «имя (копия).ext», затем «имя (копия 2).ext».
+ * Цикл конечен: занятых имён конечное число, каждое следующее — новое.
+ */
+const copyNameOf = (name: string, folderId: string | null): string => {
+  const { base, extension } = splitFileName(name);
+
+  for (let index = 1; ; index += 1) {
+    const suffix = index === 1 ? " (копия)" : ` (копия ${index})`;
+    const candidate = `${base}${suffix}${extension}`;
+
+    if (!isNameTaken(folderId, candidate, "")) {
+      return candidate;
+    }
+  }
+};
+
+export type CopyMockFileResult =
+  | { ok: true; file: FileItem }
+  | { ok: false; reason: "not-found" | "target-not-found" | "quota-exceeded" };
+
+/**
+ * Копия — новый файл с тем же содержимым (`checksum`), но своими `id`
+ * и датами. Квота проверяется как у загрузки: копия занимает тот же объём.
+ */
+export const copyMockFile = (
+  fileId: string,
+  targetFolderId?: string | null,
+): CopyMockFileResult => {
+  const file = findFile(fileId);
+
+  if (!file) {
+    return { ok: false, reason: "not-found" };
+  }
+
+  const folderId = targetFolderId === undefined ? file.folderId : targetFolderId;
+
+  if (folderId && !findFolder(folderId)) {
+    return { ok: false, reason: "target-not-found" };
+  }
+
+  if (usedBytes() + file.size > getDb().user.storageQuota) {
+    return { ok: false, reason: "quota-exceeded" };
+  }
+
+  const now = new Date().toISOString();
+  const copy: FileItem = {
+    ...file,
+    id: crypto.randomUUID(),
+    name: copyNameOf(file.name, folderId),
+    folderId,
+    createdAt: now,
+    updatedAt: now,
+  };
+
+  getDb().files.push(copy);
+  refreshDb();
+
+  return { ok: true, file: findFile(copy.id) ?? copy };
+};
+
 /** Бинарь в `localStorage` не пишем: тело собирается на лету. */
 export const mockFileContent = (file: FileItem): MockFileContent => ({
   content: `Мок-содержимое файла «${file.name}» (${file.size} байт).`,

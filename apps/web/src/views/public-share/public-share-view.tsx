@@ -118,9 +118,6 @@ export const PublicShareView = ({ token }: PublicShareViewProps) => {
 
     return (
       <>
-        <h1 className={styles.title} id="public-share-title">
-          {data.nodeName}
-        </h1>
         <p className={styles.meta}>
           <span>{isFolder ? "Папка" : "Файл"}</span>
           <span aria-hidden="true">·</span>
@@ -152,6 +149,11 @@ export const PublicShareView = ({ token }: PublicShareViewProps) => {
     <div className={styles.page}>
       <article className={styles.card} aria-labelledby="public-share-title">
         <span className={styles.badge}>Публичная ссылка</span>
+        {/* Заголовок есть в каждом состоянии: иначе `aria-labelledby` ссылается
+            в пустоту, а страница ошибки остаётся без `h1`. */}
+        <h1 className={styles.title} id="public-share-title">
+          {data?.nodeName ?? "Доступ по ссылке"}
+        </h1>
         {renderBody()}
       </article>
     </div>

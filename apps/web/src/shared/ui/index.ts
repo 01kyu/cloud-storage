@@ -9,6 +9,7 @@ export * from "./EmptyState";
 export * from "./Field";
 export * from "./IconButton";
 export * from "./Input";
+export * from "./LoadMore";
 export * from "./Modal";
 export * from "./Popover";
 export * from "./Progress";

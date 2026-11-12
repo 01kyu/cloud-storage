@@ -8,7 +8,8 @@ import {
 import { rootApi } from "@shared/api";
 
 export type ShareQueryArgs = {
-  cursor?: string;
+  /** Сколько элементов вернуть: «Показать ещё» расширяет это значение. */
+  limit?: number;
 };
 
 export type PublicShareArgs = {
@@ -27,9 +28,12 @@ export const shareApi = rootApi.injectEndpoints({
     getShares: builder.query<ListResponse<Share>, ShareQueryArgs | void>({
       query: (args) => ({
         url: API_ROUTES.shares.list,
-        params: args?.cursor ? { cursor: args.cursor } : undefined,
+        params: args?.limit ? { limit: args.limit } : undefined,
       }),
       providesTags: ["Share"],
+      /** Догрузка расширяет `limit`, поэтому кеш у списка ссылок один. */
+      serializeQueryArgs: ({ endpointName }) => endpointName,
+      forceRefetch: ({ currentArg, previousArg }) => currentArg?.limit !== previousArg?.limit,
     }),
 
     createShare: builder.mutation<Share, CreateSharePayload>({

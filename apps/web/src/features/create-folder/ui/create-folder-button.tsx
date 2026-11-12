@@ -70,7 +70,7 @@ export const CreateFolderButton = ({ parentId }: CreateFolderButtonProps) => {
           }
           size="sm"
         >
-          <form className={styles.form} onSubmit={onSubmit} noValidate>
+          <form className={styles.form} onSubmit={(event) => void onSubmit(event)} noValidate>
             <Field label="Название" error={errors.name?.message} required>
               <Input placeholder="Например, Договоры" {...register("name")} />
             </Field>
