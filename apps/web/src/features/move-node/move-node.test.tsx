@@ -93,7 +93,7 @@ describe("MoveNodeDialog", () => {
     expect(screen.queryByRole("treeitem", { name: "Отчёты" })).not.toBeInTheDocument();
   });
 
-  it("показывает ошибку переноса и оставляет диалог открытым", async () => {
+  it("показывает ошибку переноса тостом и оставляет диалог открытым", async () => {
     server.use(
       http.post(`${API_BASE_PATH}${API_ROUTES.files.move(":fileId")}`, () =>
         HttpResponse.json(
@@ -109,9 +109,7 @@ describe("MoveNodeDialog", () => {
     await user.click(await screen.findByRole("treeitem", { name: "Отчёты" }));
     await user.click(screen.getByRole("button", { name: "Переместить" }));
 
-    expect(await screen.findByRole("alert")).toHaveTextContent(
-      "В папке уже есть файл с таким именем",
-    );
+    expect(await screen.findByText("В папке уже есть файл с таким именем")).toBeInTheDocument();
     expect(onOpenChange).not.toHaveBeenCalledWith(false);
   });
 });

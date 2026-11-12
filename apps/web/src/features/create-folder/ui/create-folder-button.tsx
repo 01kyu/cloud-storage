@@ -7,7 +7,7 @@ import { useForm } from "react-hook-form";
 
 import { useCreateFolderMutation } from "@entities/folder";
 import { getApiErrorMessage } from "@shared/lib";
-import { Button, Field, Input, Modal, ModalContent } from "@shared/ui";
+import { Button, Field, Input, Modal, ModalContent, showErrorToast } from "@shared/ui";
 
 import { createFolderFormSchema, type CreateFolderFormValues } from "../model/create-folder-schema";
 
@@ -19,10 +19,12 @@ export type CreateFolderButtonProps = {
   parentId: string | null;
 };
 
-/** После успеха тег `Folder` инвалидируется — листинг и дерево обновляются сами. */
+/**
+ * После успеха тег `Folder` инвалидируется — листинг и дерево обновляются сами.
+ * Ошибка (409 или сеть) показывается тостом, диалог остаётся открытым.
+ */
 export const CreateFolderButton = ({ parentId }: CreateFolderButtonProps) => {
   const [isOpen, setIsOpen] = useState(false);
-  const [formError, setFormError] = useState<string | null>(null);
   const [createFolder, { isLoading }] = useCreateFolderMutation();
   const {
     register,
@@ -35,28 +37,17 @@ export const CreateFolderButton = ({ parentId }: CreateFolderButtonProps) => {
   });
 
   const openDialog = (): void => {
-    setFormError(null);
     reset(DEFAULT_VALUES);
     setIsOpen(true);
   };
 
-  const handleOpenChange = (nextOpen: boolean): void => {
-    setIsOpen(nextOpen);
-
-    if (!nextOpen) {
-      setFormError(null);
-    }
-  };
-
   const onSubmit = handleSubmit(async (values) => {
-    setFormError(null);
-
     try {
       await createFolder({ name: values.name, parentId }).unwrap();
       reset(DEFAULT_VALUES);
       setIsOpen(false);
     } catch (error) {
-      setFormError(getApiErrorMessage(error, "Не удалось создать папку. Попробуйте ещё раз"));
+      showErrorToast(getApiErrorMessage(error, "Не удалось создать папку. Попробуйте ещё раз"));
     }
   });
 
@@ -71,7 +62,7 @@ export const CreateFolderButton = ({ parentId }: CreateFolderButtonProps) => {
         Создать папку
       </Button>
 
-      <Modal open={isOpen} onOpenChange={handleOpenChange}>
+      <Modal open={isOpen} onOpenChange={setIsOpen}>
         <ModalContent
           title="Новая папка"
           description={
@@ -84,14 +75,8 @@ export const CreateFolderButton = ({ parentId }: CreateFolderButtonProps) => {
               <Input placeholder="Например, Договоры" {...register("name")} />
             </Field>
 
-            {formError ? (
-              <p className={styles.formError} role="alert">
-                {formError}
-              </p>
-            ) : null}
-
             <div className={styles.actions}>
-              <Button type="button" variant="secondary" onClick={() => handleOpenChange(false)}>
+              <Button type="button" variant="secondary" onClick={() => setIsOpen(false)}>
                 Отмена
               </Button>
               <Button type="submit" loading={isLoading || isSubmitting}>

@@ -12,7 +12,7 @@ import {
   type FolderTreeNode,
 } from "@entities/folder";
 import { getApiErrorMessage } from "@shared/lib";
-import { Button, Modal, ModalContent, Tree, type TreeItem } from "@shared/ui";
+import { Button, Modal, ModalContent, showErrorToast, Tree, type TreeItem } from "@shared/ui";
 
 import styles from "./move-node-dialog.module.scss";
 
@@ -70,24 +70,14 @@ export const MoveNodeDialog = ({ node, onOpenChange }: MoveNodeDialogProps) => {
   const [moveFile, { isLoading: isFileMoving }] = useMoveFileMutation();
   const [moveFolder, { isLoading: isFolderMoving }] = useMoveFolderMutation();
   const [targetId, setTargetId] = useState<string>(ROOT_ID);
-  const [formError, setFormError] = useState<string | null>(null);
 
   useEffect(() => {
     if (node) {
       setTargetId(parentIdOf(node) ?? ROOT_ID);
-      setFormError(null);
     }
   }, [node]);
 
   const items = useMemo(() => toTreeItems(folders, excludedIds(folders, node)), [folders, node]);
-
-  const handleOpenChange = (nextOpen: boolean): void => {
-    onOpenChange(nextOpen);
-
-    if (!nextOpen) {
-      setFormError(null);
-    }
-  };
 
   const targetFolderId = targetId === ROOT_ID ? null : targetId;
   const isSameParent = node ? targetFolderId === parentIdOf(node) : true;
@@ -97,8 +87,6 @@ export const MoveNodeDialog = ({ node, onOpenChange }: MoveNodeDialogProps) => {
       return;
     }
 
-    setFormError(null);
-
     try {
       if (node.type === NodeType.File) {
         await moveFile({ fileId: node.id, targetFolderId }).unwrap();
@@ -106,21 +94,21 @@ export const MoveNodeDialog = ({ node, onOpenChange }: MoveNodeDialogProps) => {
         await moveFolder({ folderId: node.id, targetFolderId }).unwrap();
       }
 
-      handleOpenChange(false);
+      onOpenChange(false);
     } catch (error) {
-      setFormError(getApiErrorMessage(error, "Не удалось переместить. Попробуйте ещё раз"));
+      showErrorToast(getApiErrorMessage(error, "Не удалось переместить. Попробуйте ещё раз"));
     }
   };
 
   return (
-    <Modal open={node !== null} onOpenChange={handleOpenChange}>
+    <Modal open={node !== null} onOpenChange={onOpenChange}>
       <ModalContent
         size="sm"
         title="Переместить"
         description={node ? `Куда переместить «${node.name}»` : undefined}
         footer={
           <>
-            <Button variant="secondary" onClick={() => handleOpenChange(false)}>
+            <Button variant="secondary" onClick={() => onOpenChange(false)}>
               Отмена
             </Button>
             <Button
@@ -144,12 +132,6 @@ export const MoveNodeDialog = ({ node, onOpenChange }: MoveNodeDialogProps) => {
             className={styles.tree}
           />
         )}
-
-        {formError ? (
-          <p className={styles.formError} role="alert">
-            {formError}
-          </p>
-        ) : null}
       </ModalContent>
     </Modal>
   );

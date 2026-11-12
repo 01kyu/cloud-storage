@@ -6,12 +6,6 @@
   gap: vars.$space-3;
 }
 
-.formError {
-  margin: 0;
-  font-size: vars.$font-size-sm;
-  color: var(--color-danger);
-}
-
 .actions {
   display: flex;
   gap: vars.$space-2;

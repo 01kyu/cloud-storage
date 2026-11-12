@@ -3,7 +3,7 @@
 import type { ReactNode } from "react";
 import dynamic from "next/dynamic";
 
-import { ToastProvider, ToastViewport, TooltipProvider } from "@shared/ui";
+import { Toaster, ToastProvider, TooltipProvider } from "@shared/ui";
 
 import { StoreProvider } from "./store-provider";
 
@@ -26,7 +26,7 @@ export const Providers = ({ children }: ProvidersProps) => (
       <ToastProvider duration={5000} swipeDirection="right">
         <MockBootstrapper />
         {children}
-        <ToastViewport />
+        <Toaster />
       </ToastProvider>
     </TooltipProvider>
   </StoreProvider>

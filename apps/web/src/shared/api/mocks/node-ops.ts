@@ -19,7 +19,7 @@ const isSameName = (left: string, right: string): boolean =>
   left.trim().toLowerCase() === right.trim().toLowerCase();
 
 /** Имя занято в целевой папке? Та же проверка, что в unique-индексе `(owner, parent, lower(name))`. */
-const isNameTaken = (parentId: string | null, name: string, exceptId: string): boolean =>
+export const isNameTaken = (parentId: string | null, name: string, exceptId: string): boolean =>
   [...getDb().folders, ...getDb().files].some(
     (node) => node.id !== exceptId && parentIdOf(node) === parentId && isSameName(node.name, name),
   );

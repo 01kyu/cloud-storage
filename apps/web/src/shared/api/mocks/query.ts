@@ -70,3 +70,15 @@ export const paginate = <T>(items: T[], cursor?: string, limit?: number): ListRe
 
 export const listNodes = (nodes: Node[], query: ListQuery): ListResponse<Node> =>
   paginate(sortNodes(nodes, query.sort), query.cursor, query.limit);
+
+/** Параметры листинга из query string: курсор, лимит и сортировка. */
+export const readListQuery = (request: Request): ListQuery => {
+  const url = new URL(request.url);
+  const limit = url.searchParams.get("limit");
+
+  return {
+    cursor: url.searchParams.get("cursor") ?? undefined,
+    limit: limit ? Number(limit) : undefined,
+    sort: url.searchParams.get("sort") ?? undefined,
+  };
+};

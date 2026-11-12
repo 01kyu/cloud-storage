@@ -42,22 +42,12 @@ const stubObjectUrl = () => {
 };
 
 const Harness = ({ file }: { file: FileItem }) => {
-  const { download, error, dismissError } = useDownloadFile();
+  const { download } = useDownloadFile();
 
   return (
-    <>
-      <button type="button" onClick={() => void download(file)}>
-        Скачать
-      </button>
-      {error ? (
-        <>
-          <p role="alert">{error}</p>
-          <button type="button" onClick={dismissError}>
-            Закрыть
-          </button>
-        </>
-      ) : null}
-    </>
+    <button type="button" onClick={() => void download(file)}>
+      Скачать
+    </button>
   );
 };
 
@@ -87,7 +77,7 @@ describe("useDownloadFile", () => {
     expect(revokeObjectURL).toHaveBeenCalledWith("blob:mock");
   });
 
-  it("показывает ошибку скачивания и не создаёт ссылку", async () => {
+  it("показывает ошибку скачивания тостом и не создаёт ссылку", async () => {
     const user = userEvent.setup();
     const { createObjectURL } = stubObjectUrl();
 
@@ -104,12 +94,8 @@ describe("useDownloadFile", () => {
 
     await user.click(screen.getByRole("button", { name: "Скачать" }));
 
-    expect(await screen.findByRole("alert")).toHaveTextContent("Файл не найден");
+    expect(await screen.findByText("Файл не найден")).toBeInTheDocument();
     expect(createObjectURL).not.toHaveBeenCalled();
-
-    await user.click(screen.getByRole("button", { name: "Закрыть" }));
-
-    expect(screen.queryByRole("alert")).not.toBeInTheDocument();
   });
 
   it("показывает запасную ошибку при сетевом сбое", async () => {
@@ -127,8 +113,10 @@ describe("useDownloadFile", () => {
     await user.click(screen.getByRole("button", { name: "Скачать" }));
 
     // `baseQuery` ретраит `FETCH_ERROR` (ожидание старта MSW), поэтому ждём дольше.
-    expect(await screen.findByRole("alert", undefined, { timeout: 3000 })).toHaveTextContent(
-      "Не удалось скачать файл. Попробуйте ещё раз",
-    );
+    expect(
+      await screen.findByText("Не удалось скачать файл. Попробуйте ещё раз", undefined, {
+        timeout: 3000,
+      }),
+    ).toBeInTheDocument();
   });
 });

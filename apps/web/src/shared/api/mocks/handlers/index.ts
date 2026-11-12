@@ -8,6 +8,7 @@ import { authHandlers } from "./auth";
 import { fileHandlers } from "./files";
 import { folderHandlers } from "./folders";
 import { healthHandlers } from "./health";
+import { trashHandlers } from "./trash";
 
 /** Всё, что не покрыто хендлерами, отвечает 404 по контракту `ApiError`. */
 export const handlers = [
@@ -15,6 +16,7 @@ export const handlers = [
   ...authHandlers,
   ...folderHandlers,
   ...fileHandlers,
+  ...trashHandlers,
 
   http.all(`${apiRoute("")}/*`, ({ request }) =>
     HttpResponse.json(

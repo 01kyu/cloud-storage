@@ -20,8 +20,6 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
   IconButton,
-  Modal,
-  ModalContent,
 } from "@shared/ui";
 
 import styles from "./file-explorer.module.scss";
@@ -90,11 +88,11 @@ export type NodeActionsProps = {
 
 /**
  * Одно меню на контекстный клик и «⋮»; диалоги действий живут в фичах,
- * там же показываются их ошибки.
+ * ошибки мутаций показываются тостами.
  */
 export const NodeActions = ({ node, children }: NodeActionsProps) => {
   const [action, setAction] = useState<NodeAction | null>(null);
-  const { download, error, dismissError } = useDownloadFile();
+  const { download } = useDownloadFile();
   const isFile = node.type === NodeType.File;
 
   const handleDownload = (): void => {
@@ -147,21 +145,6 @@ export const NodeActions = ({ node, children }: NodeActionsProps) => {
           }
         }}
       />
-
-      <Modal
-        open={error !== null}
-        onOpenChange={(open) => {
-          if (!open) {
-            dismissError();
-          }
-        }}
-      >
-        <ModalContent size="sm" title="Не удалось скачать файл">
-          <p className={styles.downloadError} role="alert">
-            {error}
-          </p>
-        </ModalContent>
-      </Modal>
     </>
   );
 };

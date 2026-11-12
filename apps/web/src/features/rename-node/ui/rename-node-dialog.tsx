@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 
@@ -8,7 +8,7 @@ import { NodeType, type Node } from "@cs/shared";
 import { useRenameFileMutation } from "@entities/file";
 import { useRenameFolderMutation } from "@entities/folder";
 import { getApiErrorMessage } from "@shared/lib";
-import { Button, Field, Input, Modal, ModalContent } from "@shared/ui";
+import { Button, Field, Input, Modal, ModalContent, showErrorToast } from "@shared/ui";
 
 import { renameNodeFormSchema, type RenameNodeFormValues } from "../model/rename-node-schema";
 
@@ -22,11 +22,10 @@ export type RenameNodeDialogProps = {
 
 const DEFAULT_VALUES: RenameNodeFormValues = { name: "" };
 
-/** Ошибка 409 остаётся в диалоге — имя можно поправить на месте. */
+/** Ошибка 409 приходит тостом: диалог остаётся открытым, имя можно поправить на месте. */
 export const RenameNodeDialog = ({ node, onOpenChange }: RenameNodeDialogProps) => {
   const [renameFile, { isLoading: isFileRenaming }] = useRenameFileMutation();
   const [renameFolder, { isLoading: isFolderRenaming }] = useRenameFolderMutation();
-  const [formError, setFormError] = useState<string | null>(null);
   const {
     register,
     handleSubmit,
@@ -40,24 +39,13 @@ export const RenameNodeDialog = ({ node, onOpenChange }: RenameNodeDialogProps) 
   useEffect(() => {
     if (node) {
       reset({ name: node.name });
-      setFormError(null);
     }
   }, [node, reset]);
-
-  const handleOpenChange = (nextOpen: boolean): void => {
-    onOpenChange(nextOpen);
-
-    if (!nextOpen) {
-      setFormError(null);
-    }
-  };
 
   const onSubmit = handleSubmit(async (values) => {
     if (!node) {
       return;
     }
-
-    setFormError(null);
 
     try {
       if (node.type === NodeType.File) {
@@ -66,14 +54,14 @@ export const RenameNodeDialog = ({ node, onOpenChange }: RenameNodeDialogProps) 
         await renameFolder({ folderId: node.id, name: values.name }).unwrap();
       }
 
-      handleOpenChange(false);
+      onOpenChange(false);
     } catch (error) {
-      setFormError(getApiErrorMessage(error, "Не удалось переименовать. Попробуйте ещё раз"));
+      showErrorToast(getApiErrorMessage(error, "Не удалось переименовать. Попробуйте ещё раз"));
     }
   });
 
   return (
-    <Modal open={node !== null} onOpenChange={handleOpenChange}>
+    <Modal open={node !== null} onOpenChange={onOpenChange}>
       <ModalContent
         size="sm"
         title="Переименовать"
@@ -84,14 +72,8 @@ export const RenameNodeDialog = ({ node, onOpenChange }: RenameNodeDialogProps) 
             <Input {...register("name")} />
           </Field>
 
-          {formError ? (
-            <p className={styles.formError} role="alert">
-              {formError}
-            </p>
-          ) : null}
-
           <div className={styles.actions}>
-            <Button type="button" variant="secondary" onClick={() => handleOpenChange(false)}>
+            <Button type="button" variant="secondary" onClick={() => onOpenChange(false)}>
               Отмена
             </Button>
             <Button type="submit" loading={isFileRenaming || isFolderRenaming || isSubmitting}>

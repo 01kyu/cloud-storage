@@ -80,7 +80,7 @@ describe("RenameNodeDialog", () => {
     );
   });
 
-  it("показывает 409 для дубликата и не меняет имя", async () => {
+  it("показывает 409 для дубликата тостом и не меняет имя", async () => {
     const user = userEvent.setup();
     const { onOpenChange, input } = renderDialog(fileNode(SEED_IDS.estimate));
 
@@ -88,9 +88,7 @@ describe("RenameNodeDialog", () => {
     await user.type(input, "Итоги года.pdf");
     await user.click(screen.getByRole("button", { name: "Сохранить" }));
 
-    expect(await screen.findByRole("alert")).toHaveTextContent(
-      "Файл с таким именем уже существует",
-    );
+    expect(await screen.findByText("Файл с таким именем уже существует")).toBeInTheDocument();
     expect(getDb().files.find((file) => file.id === SEED_IDS.estimate)?.name).toBe("Смета.xlsx");
     expect(onOpenChange).not.toHaveBeenCalledWith(false);
   });

@@ -55,15 +55,13 @@ describe("CreateFolderButton", () => {
     });
   });
 
-  it("показывает ошибку 409 для дубликата и оставляет модалку открытой", async () => {
+  it("показывает ошибку 409 для дубликата тостом и оставляет модалку открытой", async () => {
     const { user } = await openDialog();
 
     await user.type(screen.getByLabelText(/Название/), "Документы");
     await user.click(screen.getByRole("button", { name: "Создать" }));
 
-    expect(await screen.findByRole("alert")).toHaveTextContent(
-      "Папка с таким именем уже существует",
-    );
+    expect(await screen.findByText("Папка с таким именем уже существует")).toBeInTheDocument();
     expect(screen.getByRole("dialog")).toBeInTheDocument();
   });
 
@@ -99,8 +97,10 @@ describe("CreateFolderButton", () => {
     await user.click(screen.getByRole("button", { name: "Создать" }));
 
     // `baseQuery` ретраит `FETCH_ERROR` (ожидание старта MSW), поэтому ждём дольше.
-    expect(await screen.findByRole("alert", undefined, { timeout: 3000 })).toHaveTextContent(
-      "Не удалось создать папку. Попробуйте ещё раз",
-    );
+    expect(
+      await screen.findByText("Не удалось создать папку. Попробуйте ещё раз", undefined, {
+        timeout: 3000,
+      }),
+    ).toBeInTheDocument();
   });
 });

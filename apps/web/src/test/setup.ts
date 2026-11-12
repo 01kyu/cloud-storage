@@ -6,6 +6,7 @@ import { cleanup } from "@testing-library/react";
 import { afterAll, afterEach, beforeAll, expect, vi } from "vitest";
 
 import { resetDb } from "@shared/api/mocks";
+import { resetToasts } from "@shared/ui";
 
 import { server } from "./msw";
 import { resetNavigation } from "./navigation";
@@ -41,6 +42,7 @@ afterEach(() => {
   cleanup();
   server.resetHandlers();
   resetDb();
+  resetToasts();
   resetNavigation();
 });
 

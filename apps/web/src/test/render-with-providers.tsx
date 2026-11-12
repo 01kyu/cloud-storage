@@ -3,7 +3,7 @@ import { render, type RenderOptions } from "@testing-library/react";
 import { Provider } from "react-redux";
 
 import { makeStore, type AppStore } from "@app/store";
-import { ToastProvider, ToastViewport, TooltipProvider } from "@shared/ui";
+import { Toaster, ToastProvider, TooltipProvider } from "@shared/ui";
 
 type TestProvidersProps = {
   children: ReactNode;
@@ -14,9 +14,9 @@ type TestProvidersProps = {
 const TestProviders = ({ children, store }: TestProvidersProps) => (
   <Provider store={store}>
     <TooltipProvider delayDuration={0} skipDelayDuration={0}>
-      <ToastProvider duration={0}>
+      <ToastProvider duration={Infinity}>
         {children}
-        <ToastViewport />
+        <Toaster />
       </ToastProvider>
     </TooltipProvider>
   </Provider>

@@ -5,7 +5,6 @@ import {
   createFolderPayloadSchema,
   moveNodePayloadSchema,
   renameNodePayloadSchema,
-  type ListQuery,
 } from "@cs/shared";
 
 import {
@@ -18,20 +17,9 @@ import {
 } from "../db";
 import { mockLatency } from "../latency";
 import { deleteMockNode, moveMockNode, renameMockNode } from "../node-ops";
-import { listNodes } from "../query";
+import { listNodes, readListQuery } from "../query";
 import { conflict, notFound, unauthorized, validationFailed } from "../response";
 import { apiRoute } from "../route";
-
-const readQuery = (request: Request): ListQuery => {
-  const url = new URL(request.url);
-  const limit = url.searchParams.get("limit");
-
-  return {
-    cursor: url.searchParams.get("cursor") ?? undefined,
-    limit: limit ? Number(limit) : undefined,
-    sort: url.searchParams.get("sort") ?? undefined,
-  };
-};
 
 const guard = (): Response | null => (getDb().session ? null : unauthorized());
 
@@ -87,7 +75,7 @@ export const folderHandlers = [
       return denied;
     }
 
-    return HttpResponse.json(listNodes(childNodes(null), readQuery(request)));
+    return HttpResponse.json(listNodes(childNodes(null), readListQuery(request)));
   }),
 
   http.get(apiRoute(API_ROUTES.folders.children(":folderId")), async ({ params, request }) => {
@@ -105,7 +93,7 @@ export const folderHandlers = [
       return notFound(`Папка ${folderId} не найдена`);
     }
 
-    return HttpResponse.json(listNodes(childNodes(folderId), readQuery(request)));
+    return HttpResponse.json(listNodes(childNodes(folderId), readListQuery(request)));
   }),
 
   http.get(apiRoute(API_ROUTES.folders.breadcrumbs(":folderId")), async ({ params }) => {

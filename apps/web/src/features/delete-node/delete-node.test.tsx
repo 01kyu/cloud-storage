@@ -85,7 +85,7 @@ describe("DeleteNodeDialog", () => {
     expect(getDb().files.some((file) => file.id === SEED_IDS.resume)).toBe(true);
   });
 
-  it("показывает ошибку сервера и оставляет файл на месте", async () => {
+  it("показывает ошибку сервера тостом и оставляет файл на месте", async () => {
     server.use(
       http.delete(`${API_BASE_PATH}${API_ROUTES.files.byId(":fileId")}`, () =>
         HttpResponse.json(
@@ -100,7 +100,7 @@ describe("DeleteNodeDialog", () => {
 
     await user.click(screen.getByRole("button", { name: "Удалить" }));
 
-    expect(await screen.findByRole("alert")).toHaveTextContent("Сервис недоступен");
+    expect(await screen.findByText("Сервис недоступен")).toBeInTheDocument();
     expect(getDb().files.some((file) => file.id === SEED_IDS.resume)).toBe(true);
     expect(onOpenChange).not.toHaveBeenCalledWith(false);
   });
@@ -118,8 +118,19 @@ describe("DeleteNodeDialog", () => {
     await user.click(screen.getByRole("button", { name: "Удалить" }));
 
     // `baseQuery` ретраит `FETCH_ERROR` (ожидание старта MSW), поэтому ждём дольше.
-    expect(await screen.findByRole("alert", undefined, { timeout: 3000 })).toHaveTextContent(
-      "Не удалось удалить. Попробуйте ещё раз",
-    );
+    expect(
+      await screen.findByText("Не удалось удалить. Попробуйте ещё раз", undefined, {
+        timeout: 3000,
+      }),
+    ).toBeInTheDocument();
+  });
+
+  it("сообщает тостом об успешном удалении", async () => {
+    const user = userEvent.setup();
+    renderDialog(fileNode(SEED_IDS.resume));
+
+    await user.click(screen.getByRole("button", { name: "Удалить" }));
+
+    expect(await screen.findByText("«Резюме.pdf» в корзине")).toBeInTheDocument();
   });
 });
