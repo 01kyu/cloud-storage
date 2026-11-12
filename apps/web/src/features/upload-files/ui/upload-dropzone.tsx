@@ -70,6 +70,8 @@ export const UploadDropzone = ({ folderId, children }: UploadDropzoneProps) => {
   return (
     <div
       className={styles.root}
+      role="group"
+      aria-label="Область загрузки файлов"
       data-dragging={isDragging || undefined}
       onDragEnter={handleDragEnter}
       onDragOver={handleDragOver}
