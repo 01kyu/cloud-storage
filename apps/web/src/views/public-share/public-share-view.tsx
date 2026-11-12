@@ -149,11 +149,11 @@ export const PublicShareView = ({ token }: PublicShareViewProps) => {
   };
 
   return (
-    <main className={styles.page}>
+    <div className={styles.page}>
       <article className={styles.card} aria-labelledby="public-share-title">
         <span className={styles.badge}>Публичная ссылка</span>
         {renderBody()}
       </article>
-    </main>
+    </div>
   );
 };

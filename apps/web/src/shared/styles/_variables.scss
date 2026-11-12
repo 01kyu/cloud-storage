@@ -22,10 +22,12 @@ $space-6: 32px;
 $space-7: 48px;
 $space-8: 64px;
 
-$z-dropdown: 1000;
+// Портальные слои (меню, поповеры, подсказки) выше модалки: Radix рендерит
+// их в `body`, иначе оверлей диалога перехватывает клики по пунктам меню.
+$z-dropdown: 1500;
 $z-sticky: 1100;
 $z-modal: 1300;
-$z-toast: 1400;
+$z-toast: 1600;
 
 $control-height-sm: 32px;
 $control-height-md: 40px;
