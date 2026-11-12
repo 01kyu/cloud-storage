@@ -7,6 +7,7 @@ import {
   breadcrumbSchema,
   createListResponseSchema,
   DEMO_USER,
+  fileSchema,
   folderSchema,
   nodeSchema,
   userSchema,
@@ -353,6 +354,63 @@ describe("auth", () => {
     expect(apiErrorSchema.parse(wrongPassword.body)).toMatchObject({ code: "UNAUTHORIZED" });
     expect(invalidBody.status).toBe(400);
     expect(apiErrorSchema.parse(invalidBody.body)).toMatchObject({ code: "VALIDATION_FAILED" });
+  });
+});
+
+describe("POST /files/:id/copy", () => {
+  const originalEstimate = () => {
+    const file = getDb().files.find((item) => item.id === SEED_IDS.estimate);
+
+    if (!file) {
+      throw new Error("Файл сидов не найден в моке");
+    }
+
+    return file;
+  };
+
+  it("создаёт копию рядом с оригиналом с суффиксом «(копия)»", async () => {
+    const original = originalEstimate();
+    const filesBefore = getDb().files.length;
+    const { status, body } = await postJson(`${API_ROUTES.files.copy(original.id)}`, {});
+
+    expect(status).toBe(201);
+
+    const copy = fileSchema.parse(body);
+
+    expect(copy.id).not.toBe(original.id);
+    expect(copy.name).toBe("Смета (копия).xlsx");
+    expect(copy.folderId).toBe(original.folderId);
+    expect(copy.checksum).toBe(original.checksum);
+    expect(getDb().files).toHaveLength(filesBefore + 1);
+  });
+
+  it("нумерует повторы и умеет копировать в другую папку", async () => {
+    const original = originalEstimate();
+
+    await postJson(`${API_ROUTES.files.copy(original.id)}`, {});
+
+    const second = await postJson(`${API_ROUTES.files.copy(original.id)}`, {});
+    const moved = await postJson(`${API_ROUTES.files.copy(original.id)}`, {
+      targetFolderId: SEED_IDS.documents,
+    });
+
+    expect(fileSchema.parse(second.body).name).toBe("Смета (копия 2).xlsx");
+    // Нумерация считается в целевой папке: в «Документах» копий ещё нет.
+    expect(fileSchema.parse(moved.body)).toMatchObject({
+      name: "Смета (копия).xlsx",
+      folderId: SEED_IDS.documents,
+    });
+  });
+
+  it("отвечает 404 для неизвестного файла и папки назначения", async () => {
+    const unknownFile = await postJson(API_ROUTES.files.copy("unknown-file"), {});
+    const unknownFolder = await postJson(`${API_ROUTES.files.copy(SEED_IDS.estimate)}`, {
+      targetFolderId: "00000000-0000-4000-8000-000000000000",
+    });
+
+    expect(unknownFile.status).toBe(404);
+    expect(unknownFolder.status).toBe(404);
+    expect(apiErrorSchema.parse(unknownFolder.body)).toMatchObject({ code: "NOT_FOUND" });
   });
 });
 
