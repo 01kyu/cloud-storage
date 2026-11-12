@@ -37,6 +37,53 @@ describe("Modal", () => {
     expect(screen.getByText("Содержимое")).toBeInTheDocument();
   });
 
+  it("фокусирует первое поле ввода при открытии", async () => {
+    const user = userEvent.setup();
+
+    render(
+      <Modal>
+        <ModalTrigger asChild>
+          <Button>Открыть</Button>
+        </ModalTrigger>
+        <ModalContent title="Новая папка">
+          <input aria-label="Название" />
+          <Button>Создать</Button>
+        </ModalContent>
+      </Modal>,
+    );
+
+    await user.click(screen.getByRole("button", { name: "Открыть" }));
+
+    await screen.findByRole("dialog");
+    await waitFor(() => expect(screen.getByRole("textbox", { name: "Название" })).toHaveFocus());
+  });
+
+  it("оставляет фокус обработчику, если он передан", async () => {
+    const user = userEvent.setup();
+    const onOpenAutoFocus = vi.fn((event: Event) => {
+      event.preventDefault();
+      screen.getByRole("link", { name: "Ссылка" }).focus();
+    });
+
+    render(
+      <Modal>
+        <ModalTrigger asChild>
+          <Button>Открыть</Button>
+        </ModalTrigger>
+        <ModalContent title="Новая папка" onOpenAutoFocus={onOpenAutoFocus}>
+          <input aria-label="Название" />
+          <a href="#target">Ссылка</a>
+        </ModalContent>
+      </Modal>,
+    );
+
+    await user.click(screen.getByRole("button", { name: "Открыть" }));
+
+    await screen.findByRole("dialog");
+    expect(onOpenAutoFocus).toHaveBeenCalled();
+    await waitFor(() => expect(screen.getByRole("link", { name: "Ссылка" })).toHaveFocus());
+  });
+
   it("закрывается по Escape и возвращает фокус на триггер", async () => {
     const user = userEvent.setup();
     const onOpenChange = vi.fn();

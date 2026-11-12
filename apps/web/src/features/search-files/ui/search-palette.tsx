@@ -68,12 +68,15 @@ export const SearchPalette = ({ open, onOpenChange }: SearchPaletteProps) => {
   );
   const activeResult = results[activeIndex];
 
-  /** Радикс отдаёт фокус кнопке «Закрыть», а палитре нужен ввод. */
-  useEffect(() => {
-    if (open) {
-      inputRef.current?.focus();
-    }
-  }, [open]);
+  /**
+   * Радикс отдаёт фокус первому элементу диалога (кнопке «Закрыть»), а палитре
+   * нужен ввод. Эффект `open` тут не годится: focus-scope ставит фокус сам
+   * и делает это после эффектов родителя, поэтому перехватываем его штатно.
+   */
+  const focusInput = (event: Event): void => {
+    event.preventDefault();
+    inputRef.current?.focus();
+  };
 
   useEffect(() => {
     if (!open) {
@@ -199,6 +202,7 @@ export const SearchPalette = ({ open, onOpenChange }: SearchPaletteProps) => {
         description="Папки и файлы по имени — по всему хранилищу."
         size="lg"
         className={styles.dialog}
+        onOpenAutoFocus={focusInput}
       >
         <div className={styles.controls}>
           <div className={styles.field}>
