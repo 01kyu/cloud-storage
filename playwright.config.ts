@@ -8,6 +8,12 @@ const PORT = Number(process.env.E2E_PORT ?? 3000);
 const BASE_URL = `http://127.0.0.1:${PORT}`;
 
 /**
+ * Замедление шагов для наглядного прогона: `set E2E_SLOW_MO=800&& npm run test:e2e:headed`.
+ * В CLI-флаге такого нет, поэтому значение читается из окружения.
+ */
+const SLOW_MO = Number(process.env.E2E_SLOW_MO ?? 0);
+
+/**
  * E2E гоняется по production-сборке: dev-компиляция страниц по требованию
  * даёт плавающие таймауты на первом переходе.
  *
@@ -28,7 +34,12 @@ export default defineConfig({
     screenshot: "only-on-failure",
     video: "retain-on-failure",
   },
-  projects: [{ name: "chromium", use: { ...devices["Desktop Chrome"] } }],
+  projects: [
+    {
+      name: "chromium",
+      use: { ...devices["Desktop Chrome"], launchOptions: SLOW_MO > 0 ? { slowMo: SLOW_MO } : {} },
+    },
+  ],
   webServer: {
     command: `npm run build --workspace @cs/web && npm run start --workspace @cs/web -- --port ${PORT}`,
     url: BASE_URL,
