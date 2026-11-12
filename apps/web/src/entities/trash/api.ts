@@ -8,7 +8,8 @@ import {
 import { rootApi } from "@shared/api";
 
 export type TrashQueryArgs = {
-  cursor?: string;
+  /** Сколько элементов вернуть: «Показать ещё» расширяет это значение. */
+  limit?: number;
 };
 
 /**
@@ -20,9 +21,12 @@ export const trashApi = rootApi.injectEndpoints({
     getTrash: builder.query<ListResponse<TrashItem>, TrashQueryArgs | void>({
       query: (args) => ({
         url: API_ROUTES.trash.list,
-        params: args?.cursor ? { cursor: args.cursor } : undefined,
+        params: args?.limit ? { limit: args.limit } : undefined,
       }),
       providesTags: ["Trash"],
+      /** Догрузка расширяет `limit`, поэтому кеш у корзины один. */
+      serializeQueryArgs: ({ endpointName }) => endpointName,
+      forceRefetch: ({ currentArg, previousArg }) => currentArg?.limit !== previousArg?.limit,
     }),
 
     restoreNode: builder.mutation<Node, string>({

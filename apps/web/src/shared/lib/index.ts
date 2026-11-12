@@ -6,4 +6,5 @@ export * from "./format-date";
 export * from "./save-file";
 export * from "./use-debounce";
 export * from "./use-origin";
+export * from "./use-paged-list";
 export * from "./use-theme";

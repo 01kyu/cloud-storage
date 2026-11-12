@@ -17,6 +17,7 @@ import {
   DropdownMenuRadioItem,
   DropdownMenuTrigger,
   Input,
+  LoadMore,
   Modal,
   ModalContent,
   Skeleton,
@@ -61,7 +62,10 @@ export const SearchPalette = ({ open, onOpenChange }: SearchPaletteProps) => {
   const [filter, setFilter] = useState<SearchFilter>(SearchFilter.All);
   const [activeIndex, setActiveIndex] = useState(0);
 
-  const { results, isReady, isFetching, isError, refetch } = useSearch(term, filter);
+  const { results, hasMore, isReady, isFetching, isError, loadMore, refetch } = useSearch(
+    term,
+    filter,
+  );
   const activeResult = results[activeIndex];
 
   /** Радикс отдаёт фокус кнопке «Закрыть», а палитре нужен ввод. */
@@ -236,7 +240,17 @@ export const SearchPalette = ({ open, onOpenChange }: SearchPaletteProps) => {
           </DropdownMenu>
         </div>
 
-        <div className={styles.results}>{renderResults()}</div>
+        <div className={styles.results}>
+          {renderResults()}
+          {results.length > 0 ? (
+            <LoadMore
+              hasMore={hasMore}
+              loadedCount={results.length}
+              loading={isFetching}
+              onLoadMore={loadMore}
+            />
+          ) : null}
+        </div>
 
         <footer className={styles.hints}>
           <span>

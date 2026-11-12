@@ -15,7 +15,8 @@ import {
 } from "@features/toggle-view";
 import { UploadButton, UploadDropzone, UploadQueue } from "@features/upload-files";
 import { ROUTES } from "@shared/config";
-import { Breadcrumbs, Button, EmptyState, Skeleton } from "@shared/ui";
+import { usePagedList } from "@shared/lib";
+import { Breadcrumbs, Button, EmptyState, LoadMore, Skeleton } from "@shared/ui";
 
 import styles from "./file-explorer.module.scss";
 import { NodeGrid } from "./node-grid";
@@ -32,13 +33,16 @@ export const FileExplorer = ({ folderId }: FileExplorerProps) => {
   const viewMode = useExplorerSelector(selectViewMode);
   const sort = useExplorerSelector(selectSort);
   const sortParam = serializeSort(sort);
+  const { limit, canExpand, loadMore } = usePagedList(`${folderId ?? "root"}:${sortParam}`);
   const { data, isLoading, isError, isFetching, refetch } = useGetFolderChildrenQuery({
     folderId,
     sort: sortParam,
+    limit,
   });
   const { data: breadcrumbs } = useGetBreadcrumbsQuery(folderId ?? skipToken);
 
   const items = data?.items ?? [];
+  const hasMore = canExpand && Boolean(data?.nextCursor);
   const title = breadcrumbs?.at(-1)?.name ?? "Все файлы";
   const crumbs = [
     { id: "root", label: "Все файлы", href: ROUTES.files },
@@ -107,6 +111,15 @@ export const FileExplorer = ({ folderId }: FileExplorerProps) => {
           <NodeList items={items} />
         )}
       </UploadDropzone>
+
+      {isLoading || isError ? null : (
+        <LoadMore
+          hasMore={hasMore}
+          loadedCount={items.length}
+          loading={isFetching && !isLoading}
+          onLoadMore={loadMore}
+        />
+      )}
     </section>
   );
 };

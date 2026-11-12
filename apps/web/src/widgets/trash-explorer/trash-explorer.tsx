@@ -6,8 +6,8 @@ import { NodeIcon } from "@entities/file";
 import { describeTrashItem, useGetTrashQuery } from "@entities/trash";
 import { PurgeAllButton, PurgeNodeButton } from "@features/purge-trash";
 import { RestoreNodeButton } from "@features/restore-from-trash";
-import { formatDate } from "@shared/lib";
-import { Button, EmptyState, Skeleton } from "@shared/ui";
+import { formatDate, usePagedList } from "@shared/lib";
+import { Button, EmptyState, LoadMore, Skeleton } from "@shared/ui";
 
 import styles from "./trash-explorer.module.scss";
 
@@ -18,8 +18,10 @@ const SKELETON_ROWS = Array.from({ length: 4 }, (_, index) => index);
  * строками не выводится, потому что restore/purge работают с поддеревом целиком.
  */
 export const TrashExplorer = () => {
-  const { data, isLoading, isError, isFetching, refetch } = useGetTrashQuery();
+  const { limit, canExpand, loadMore } = usePagedList("trash");
+  const { data, isLoading, isError, isFetching, refetch } = useGetTrashQuery({ limit });
   const items = data?.items ?? [];
+  const hasMore = canExpand && Boolean(data?.nextCursor);
 
   return (
     <section className={styles.root} aria-labelledby="trash-title">
@@ -94,6 +96,15 @@ export const TrashExplorer = () => {
             </li>
           ))}
         </ul>
+      )}
+
+      {isLoading || isError ? null : (
+        <LoadMore
+          hasMore={hasMore}
+          loadedCount={items.length}
+          loading={isFetching && !isLoading}
+          onLoadMore={loadMore}
+        />
       )}
     </section>
   );

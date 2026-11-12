@@ -3,7 +3,8 @@
 import { Link2, RefreshCw } from "lucide-react";
 
 import { useGetSharesQuery } from "@entities/share";
-import { Button, EmptyState, Skeleton } from "@shared/ui";
+import { usePagedList } from "@shared/lib";
+import { Button, EmptyState, LoadMore, Skeleton } from "@shared/ui";
 
 import { ShareRow } from "./share-row";
 import styles from "./shares-explorer.module.scss";
@@ -15,8 +16,10 @@ const SKELETON_ROWS = Array.from({ length: 3 }, (_, index) => index);
  * из списка сам, потому что мок фильтрует «висячие» шары.
  */
 export const SharesExplorer = () => {
-  const { data, isLoading, isError, isFetching, refetch } = useGetSharesQuery();
+  const { limit, canExpand, loadMore } = usePagedList("shares");
+  const { data, isLoading, isError, isFetching, refetch } = useGetSharesQuery({ limit });
   const items = data?.items ?? [];
+  const hasMore = canExpand && Boolean(data?.nextCursor);
 
   return (
     <section className={styles.root} aria-labelledby="shares-title">
@@ -74,6 +77,15 @@ export const SharesExplorer = () => {
             </li>
           ))}
         </ul>
+      )}
+
+      {isLoading || isError ? null : (
+        <LoadMore
+          hasMore={hasMore}
+          loadedCount={items.length}
+          loading={isFetching && !isLoading}
+          onLoadMore={loadMore}
+        />
       )}
     </section>
   );

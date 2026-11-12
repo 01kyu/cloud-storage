@@ -3,7 +3,7 @@
 import { skipToken } from "@reduxjs/toolkit/query";
 
 import { LIMITS } from "@cs/shared";
-import { useDebouncedValue } from "@shared/lib";
+import { useDebouncedValue, usePagedList } from "@shared/lib";
 
 import { useGetSearchResultsQuery } from "../api";
 
@@ -13,23 +13,27 @@ import { toSearchFilterParams, type SearchFilter } from "./search-filters";
 export const SEARCH_DEBOUNCE_MS = 300;
 
 /**
- * Хук палитры: дебаунс + `skipToken` до минимальной длины. Пока запрос
- * не набрал `LIMITS.searchQueryMinLength`, сеть не трогаем.
+ * Хук палитры: дебаунс + `skipToken` до минимальной длины + догрузка.
+ * Пока запрос не набрал `LIMITS.searchQueryMinLength`, сеть не трогаем;
+ * смена запроса или фильтра начинает выдачу заново (свой `scope`).
  */
 export const useSearch = (term: string, filter: SearchFilter) => {
   const debouncedTerm = useDebouncedValue(term.trim(), SEARCH_DEBOUNCE_MS);
   const isReady = debouncedTerm.length >= LIMITS.searchQueryMinLength;
+  const filterParams = toSearchFilterParams(filter);
+  const { limit, canExpand, loadMore } = usePagedList(`${debouncedTerm}:${filter}`);
 
   const { data, isFetching, isError, refetch } = useGetSearchResultsQuery(
-    isReady ? { q: debouncedTerm, ...toSearchFilterParams(filter) } : skipToken,
+    isReady ? { q: debouncedTerm, ...filterParams, limit } : skipToken,
   );
 
   return {
     results: data?.items ?? [],
-    nextCursor: data?.nextCursor ?? null,
+    hasMore: canExpand && Boolean(data?.nextCursor),
     isReady,
     isFetching,
     isError,
+    loadMore,
     refetch,
   };
 };
