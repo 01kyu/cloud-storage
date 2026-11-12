@@ -1,0 +1,73 @@
+@use "variables" as vars;
+
+.page {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  padding: vars.$space-4;
+  background-color: var(--color-bg);
+}
+
+.card {
+  display: flex;
+  flex-direction: column;
+  gap: vars.$space-3;
+  align-items: flex-start;
+  width: 100%;
+  max-width: 520px;
+  padding: vars.$space-6;
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-md);
+}
+
+.badge {
+  padding: vars.$space-1 vars.$space-2;
+  font-size: vars.$font-size-xs;
+  font-weight: var(--font-weight-medium);
+  color: var(--color-accent);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  background-color: var(--color-accent-soft);
+  border-radius: var(--radius-sm);
+}
+
+.title {
+  margin: 0;
+  font-size: vars.$font-size-2xl;
+  font-weight: var(--font-weight-bold);
+  line-height: var(--line-height-tight);
+  color: var(--color-text);
+  overflow-wrap: anywhere;
+}
+
+.meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: vars.$space-1;
+  margin: 0;
+  font-size: vars.$font-size-sm;
+  color: var(--color-text-muted);
+}
+
+.hint {
+  margin: 0;
+  font-size: vars.$font-size-sm;
+  color: var(--color-text-muted);
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: vars.$space-3;
+  width: 100%;
+}
+
+.skeleton {
+  display: flex;
+  flex-direction: column;
+  gap: vars.$space-2;
+  width: 100%;
+}

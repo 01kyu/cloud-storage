@@ -1,9 +1,10 @@
 "use client";
 
 import { useState, type ReactNode } from "react";
-import { Download, FolderInput, MoreHorizontal, Pencil, Trash2 } from "lucide-react";
+import { Download, FolderInput, MoreHorizontal, Pencil, Share2, Trash2 } from "lucide-react";
 
 import { NodeType, type Node } from "@cs/shared";
+import { ShareNodeDialog } from "@features/create-share-link";
 import { DeleteNodeDialog } from "@features/delete-node";
 import { useDownloadFile } from "@features/download-file";
 import { MoveNodeDialog } from "@features/move-node";
@@ -24,7 +25,7 @@ import {
 
 import styles from "./file-explorer.module.scss";
 
-type NodeAction = "rename" | "move" | "delete";
+type NodeAction = "rename" | "move" | "share" | "delete";
 
 type ActionsListProps = {
   isFile: boolean;
@@ -47,6 +48,10 @@ const ContextActions = ({ isFile, onAction, onDownload }: ActionsListProps) => (
     <ContextMenuItem onSelect={() => onAction("move")}>
       <FolderInput size={14} aria-hidden="true" />
       Переместить
+    </ContextMenuItem>
+    <ContextMenuItem onSelect={() => onAction("share")}>
+      <Share2 size={14} aria-hidden="true" />
+      Поделиться
     </ContextMenuItem>
     <ContextMenuSeparator />
     <ContextMenuItem tone="danger" onSelect={() => onAction("delete")}>
@@ -72,6 +77,10 @@ const DropdownActions = ({ isFile, onAction, onDownload }: ActionsListProps) => 
     <DropdownMenuItem onSelect={() => onAction("move")}>
       <FolderInput size={14} aria-hidden="true" />
       Переместить
+    </DropdownMenuItem>
+    <DropdownMenuItem onSelect={() => onAction("share")}>
+      <Share2 size={14} aria-hidden="true" />
+      Поделиться
     </DropdownMenuItem>
     <DropdownMenuSeparator />
     <DropdownMenuItem tone="danger" onSelect={() => onAction("delete")}>
@@ -131,6 +140,14 @@ export const NodeActions = ({ node, children }: NodeActionsProps) => {
       />
       <MoveNodeDialog
         node={action === "move" ? node : null}
+        onOpenChange={(open) => {
+          if (!open) {
+            setAction(null);
+          }
+        }}
+      />
+      <ShareNodeDialog
+        node={action === "share" ? node : null}
         onOpenChange={(open) => {
           if (!open) {
             setAction(null);

@@ -1,0 +1,26 @@
+@use "variables" as vars;
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: vars.$space-3;
+}
+
+.group {
+  display: flex;
+  flex-direction: column;
+  gap: vars.$space-1;
+}
+
+.label {
+  font-size: vars.$font-size-sm;
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text-muted);
+}
+
+.actions {
+  display: flex;
+  gap: vars.$space-2;
+  justify-content: flex-end;
+  margin-top: vars.$space-2;
+}
