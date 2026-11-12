@@ -10,6 +10,11 @@ export const LIMITS = {
   /** Короче — поиск совпадёт почти со всем хранилищем. */
   searchQueryMinLength: 2,
   searchQueryMaxLength: 100,
+  /** Пароль публичной ссылки: 4 символа — минимум формы, 72 — потолок argon2. */
+  sharePasswordMinLength: 4,
+  sharePasswordMaxLength: 72,
+  /** Минимальная длина токена: короткий токен подбирается перебором. */
+  shareTokenMinLength: 8,
 } as const;
 
 export const AUTH = {

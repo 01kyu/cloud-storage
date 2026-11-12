@@ -6,6 +6,7 @@ import {
   apiErrorSchema,
   authResponseSchema,
   createListResponseSchema,
+  createSharePayloadSchema,
   fileSchema,
   folderSchema,
   loginPayloadSchema,
@@ -110,10 +111,28 @@ describe("контракт @cs/shared", () => {
         nodeName: share.nodeName,
         mimeType: "application/pdf",
         size: 1024,
+        permission: "download",
         hasPassword: false,
         expiresAt: null,
       }),
-    ).toMatchObject({ token: share.token });
+    ).toMatchObject({ token: share.token, permission: "download" });
+  });
+
+  it("валидирует payload создания ссылки: пароль и срок необязательны", () => {
+    const payload = {
+      nodeId: FILE_ID,
+      nodeType: NodeType.File,
+      permission: "download",
+    };
+
+    expect(createSharePayloadSchema.parse(payload)).toEqual(payload);
+    expect(
+      createSharePayloadSchema.parse({ ...payload, password: "1234", expiresAt: ISO_DATE }),
+    ).toMatchObject({ password: "1234", expiresAt: ISO_DATE });
+
+    expect(() => createSharePayloadSchema.parse({ ...payload, password: "123" })).toThrow();
+    expect(() => createSharePayloadSchema.parse({ ...payload, permission: "write" })).toThrow();
+    expect(() => publicShareSchema.parse({ token: "short" })).toThrow();
   });
 
   it("валидирует ответ авторизации и payload логина", () => {

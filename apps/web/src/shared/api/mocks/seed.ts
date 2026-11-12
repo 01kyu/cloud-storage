@@ -7,13 +7,12 @@ import {
   UserRole,
   type FileItem,
   type Folder,
-  type Share,
   type TrashItem,
 } from "@cs/shared";
 import { checksumOf } from "@shared/lib";
 
 import { MOCK_DB_VERSION } from "./constants";
-import type { MockDb, MockUser } from "./db";
+import type { MockDb, MockShare, MockUser } from "./db";
 import { extensionOf } from "./file-meta";
 import { recountFolders, storageUsed } from "./recount";
 
@@ -298,7 +297,7 @@ const seedUser: MockUser = {
 export const createSeedDb = (): MockDb => {
   const files = buildFiles(FILE_SEEDS);
   const folders = recountFolders(buildFolders(FOLDER_SEEDS), files);
-  const shares: Share[] = [];
+  const shares: MockShare[] = [];
   const trash: TrashItem[] = [];
 
   return {

@@ -18,6 +18,12 @@ export type MockUser = User & { password: string };
 
 export type MockSession = { token: string };
 
+/**
+ * Пароль публичной ссылки живёт только в моке: в контрактный `Share` он не входит,
+ * поэтому наружу отдаётся копия без этого поля.
+ */
+export type MockShare = Share & { password: string | null };
+
 export type MockDb = {
   version: number;
   user: MockUser;
@@ -25,7 +31,7 @@ export type MockDb = {
   files: FileItem[];
   /** Корзина: узлы с `deletedAt`. */
   trash: TrashItem[];
-  shares: Share[];
+  shares: MockShare[];
   session: MockSession | null;
 };
 
@@ -43,6 +49,7 @@ const isMockDb = (value: unknown): value is MockDb => {
     Array.isArray(candidate.folders) &&
     Array.isArray(candidate.files) &&
     Array.isArray(candidate.trash) &&
+    Array.isArray(candidate.shares) &&
     typeof candidate.user === "object" &&
     candidate.user !== null
   );

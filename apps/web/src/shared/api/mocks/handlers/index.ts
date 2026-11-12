@@ -9,6 +9,7 @@ import { fileHandlers } from "./files";
 import { folderHandlers } from "./folders";
 import { healthHandlers } from "./health";
 import { searchHandlers } from "./search";
+import { shareHandlers } from "./shares";
 import { trashHandlers } from "./trash";
 
 /** Всё, что не покрыто хендлерами, отвечает 404 по контракту `ApiError`. */
@@ -19,6 +20,7 @@ export const handlers = [
   ...fileHandlers,
   ...trashHandlers,
   ...searchHandlers,
+  ...shareHandlers,
 
   http.all(`${apiRoute("")}/*`, ({ request }) =>
     HttpResponse.json(
