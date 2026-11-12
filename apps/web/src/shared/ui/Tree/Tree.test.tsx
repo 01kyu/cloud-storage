@@ -40,6 +40,18 @@ describe("Tree", () => {
     expect(container).toBeEmptyDOMElement();
   });
 
+  it("отдаёт в стили уровень вложенности для отступа", () => {
+    renderTree();
+
+    const depthOf = (name: string): string | undefined =>
+      item(name).closest("li")?.style.getPropertyValue("--tree-depth");
+
+    expect(depthOf("Документы")).toBe("0");
+    expect(depthOf("Отчёты")).toBe("1");
+    expect(depthOf("Договоры")).toBe("1");
+    expect(depthOf("Музыка")).toBe("0");
+  });
+
   it("сворачивает и разворачивает узел кнопкой", async () => {
     const user = userEvent.setup();
 

@@ -1,6 +1,14 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState, type KeyboardEvent, type ReactNode } from "react";
+import {
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+  type CSSProperties,
+  type KeyboardEvent,
+  type ReactNode,
+} from "react";
 import Link from "next/link";
 import { ChevronRight } from "lucide-react";
 
@@ -224,7 +232,13 @@ export const Tree = ({
           );
 
           return (
-            <li key={item.id} className={styles.item} role="none">
+            <li
+              key={item.id}
+              className={styles.item}
+              role="none"
+              // Уровень уходит в стили переменной: от него считается отступ вложенности.
+              style={{ "--tree-depth": depth } as CSSProperties}
+            >
               <div className={styles.row}>
                 {hasChildren ? (
                   <button
