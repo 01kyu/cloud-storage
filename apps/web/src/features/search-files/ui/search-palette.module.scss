@@ -1,0 +1,119 @@
+@use "mixins" as *;
+@use "variables" as vars;
+
+.dialog {
+  max-height: 80dvh;
+}
+
+.controls {
+  display: flex;
+  gap: vars.$space-2;
+  align-items: center;
+}
+
+.field {
+  position: relative;
+  flex: 1;
+  min-width: 0;
+}
+
+.fieldIcon {
+  position: absolute;
+  top: 50%;
+  left: vars.$space-3;
+  color: var(--color-text-muted);
+  pointer-events: none;
+  transform: translateY(-50%);
+}
+
+.fieldInput {
+  padding-left: calc(#{vars.$space-3} * 2 + 16px);
+}
+
+.results {
+  min-height: 120px;
+}
+
+.message {
+  display: flex;
+  flex-direction: column;
+  gap: vars.$space-3;
+  align-items: flex-start;
+  padding: vars.$space-4 0;
+  margin: 0;
+  font-size: vars.$font-size-sm;
+  color: var(--color-text-muted);
+
+  p {
+    margin: 0;
+  }
+}
+
+.skeletonList {
+  display: flex;
+  flex-direction: column;
+  gap: vars.$space-2;
+}
+
+.list {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  max-height: 46dvh;
+  padding: 0;
+  margin: 0;
+  overflow-y: auto;
+  list-style: none;
+}
+
+.item {
+  display: flex;
+  gap: vars.$space-3;
+  align-items: center;
+  padding: vars.$space-2 vars.$space-3;
+  cursor: pointer;
+  border-radius: var(--radius-md);
+}
+
+.itemActive {
+  background-color: var(--color-accent-soft);
+}
+
+.itemText {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.itemName {
+  font-size: vars.$font-size-sm;
+  font-weight: vars.$font-weight-medium;
+
+  @include truncate;
+}
+
+.itemMeta {
+  font-size: vars.$font-size-xs;
+  color: var(--color-text-muted);
+
+  @include truncate;
+}
+
+.hints {
+  display: flex;
+  flex-wrap: wrap;
+  gap: vars.$space-3;
+  font-size: vars.$font-size-xs;
+  color: var(--color-text-muted);
+}
+
+.key {
+  padding: 0 vars.$space-1;
+  font-family: inherit;
+  font-size: inherit;
+  color: var(--color-text);
+  background-color: var(--color-surface-muted);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+}

@@ -1,4 +1,4 @@
-import { screen, within } from "@testing-library/react";
+import { screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 
@@ -60,5 +60,41 @@ describe("AppShell", () => {
       await screen.findByRole("button", { name: "Включить светлую тему" }),
     ).toBeInTheDocument();
     expect(document.documentElement.dataset.theme).toBe("dark");
+  });
+
+  it("открывает палитру поиска кнопкой в сайдбаре", async () => {
+    const user = userEvent.setup();
+
+    renderWithProviders(
+      <AppShell>
+        <p>Контент</p>
+      </AppShell>,
+    );
+
+    await user.click(screen.getByRole("button", { name: "Поиск" }));
+
+    expect(await screen.findByRole("dialog")).toBeInTheDocument();
+
+    await user.type(screen.getByRole("combobox", { name: "Поиск по имени" }), "рез");
+
+    expect(await screen.findByRole("option", { name: /Резюме\.pdf/ })).toBeInTheDocument();
+  });
+
+  it("открывает палитру поиска по Ctrl+K и закрывает по Esc", async () => {
+    const user = userEvent.setup();
+
+    renderWithProviders(
+      <AppShell>
+        <p>Контент</p>
+      </AppShell>,
+    );
+
+    await user.keyboard("{Control>}k{/Control}");
+
+    expect(await screen.findByRole("dialog")).toBeInTheDocument();
+
+    await user.keyboard("{Escape}");
+
+    await waitFor(() => expect(screen.queryByRole("dialog")).not.toBeInTheDocument());
   });
 });

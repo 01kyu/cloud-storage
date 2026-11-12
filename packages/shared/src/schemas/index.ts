@@ -3,6 +3,7 @@ export * from "./auth";
 export * from "./common";
 export * from "./file";
 export * from "./folder";
+export * from "./search";
 export * from "./share";
 export * from "./trash";
 export * from "./user";

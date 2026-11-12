@@ -7,6 +7,9 @@ export const LIMITS = {
   maxFolderDepth: 20,
   maxNameLength: 255,
   minPasswordLength: 8,
+  /** Короче — поиск совпадёт почти со всем хранилищем. */
+  searchQueryMinLength: 2,
+  searchQueryMaxLength: 100,
 } as const;
 
 export const AUTH = {

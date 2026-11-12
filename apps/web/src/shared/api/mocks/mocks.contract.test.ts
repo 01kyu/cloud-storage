@@ -358,7 +358,7 @@ describe("auth", () => {
 
 describe("неизвестный маршрут", () => {
   it("отвечает 404 по контракту ApiError", async () => {
-    const { status, body } = await getJson(API_ROUTES.search.query);
+    const { status, body } = await getJson("/unknown-route");
 
     expect(status).toBe(404);
     expect(apiErrorSchema.parse(body)).toMatchObject({ code: "NOT_FOUND" });
