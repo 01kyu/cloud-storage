@@ -7,7 +7,6 @@ import {
   initialExplorerState,
   selectSort,
   selectViewMode,
-  serializeSort,
   setSortDirection,
   setSortField,
   setViewMode,
@@ -44,7 +43,7 @@ describe("explorerSlice", () => {
     expect(ascending.sort.direction).toBe(SortDirection.Asc);
   });
 
-  it("отдаёт срез стора селекторами и сериализует сортировку для API", () => {
+  it("отдаёт срез стора селекторами", () => {
     const state = explorerReducer(
       explorerReducer(initialExplorerState, setViewMode("grid")),
       setSortField(SortField.UpdatedAt),
@@ -53,6 +52,5 @@ describe("explorerSlice", () => {
 
     expect(selectViewMode(root)).toBe("grid");
     expect(selectSort(root)).toEqual({ field: "updatedAt", direction: "asc" });
-    expect(serializeSort(selectSort(root))).toBe("updatedAt:asc");
   });
 });

@@ -2,41 +2,51 @@
 
 import { formatBytes, NodeType, type Node } from "@cs/shared";
 import { describeFile, NodeIcon } from "@entities/file";
-import { formatDate } from "@shared/lib";
+import { cn, formatDate } from "@shared/lib";
 
 import styles from "./file-explorer.module.scss";
 import { NodeActions } from "./node-actions";
+import { HighlightedName, nodeRowId, type NodeHighlightProps } from "./node-highlight";
 import { NodeLink } from "./node-link";
 
-export type NodeListProps = {
+export type NodeListProps = NodeHighlightProps & {
   items: Node[];
 };
 
-export const NodeList = ({ items }: NodeListProps) => (
+export const NodeList = ({ items, highlightNodeId = null, highlightQuery = "" }: NodeListProps) => (
   <ul className={styles.list} data-view="list">
-    {items.map((node) => (
-      <li key={node.id} className={styles.rowItem}>
-        <div className={styles.row}>
-          <NodeActions node={node}>
-            <NodeLink node={node} className={styles.rowLink}>
-              <NodeIcon node={node} />
-              <span className={styles.rowMain}>
-                <span className={styles.rowName}>{node.name}</span>
-                <span className={styles.rowMeta}>
-                  {node.type === NodeType.Folder
-                    ? `${node.childCount} объектов`
-                    : describeFile(node)}
-                  <span className={styles.dot} aria-hidden="true">
-                    ·
+    {items.map((node) => {
+      const isHighlighted = node.id === highlightNodeId;
+
+      return (
+        <li key={node.id} id={nodeRowId(node.id)} className={styles.rowItem}>
+          <div className={styles.row}>
+            <NodeActions node={node}>
+              <NodeLink
+                node={node}
+                className={cn(styles.rowLink, isHighlighted && styles.highlighted)}
+              >
+                <NodeIcon node={node} />
+                <span className={styles.rowMain}>
+                  <span className={styles.rowName}>
+                    <HighlightedName text={node.name} query={isHighlighted ? highlightQuery : ""} />
                   </span>
-                  {formatBytes(node.size)}
+                  <span className={styles.rowMeta}>
+                    {node.type === NodeType.Folder
+                      ? `${node.childCount} объектов`
+                      : describeFile(node)}
+                    <span className={styles.dot} aria-hidden="true">
+                      ·
+                    </span>
+                    {formatBytes(node.size)}
+                  </span>
                 </span>
-              </span>
-            </NodeLink>
-          </NodeActions>
-          <span className={styles.rowDate}>{formatDate(node.updatedAt)}</span>
-        </div>
-      </li>
-    ))}
+              </NodeLink>
+            </NodeActions>
+            <span className={styles.rowDate}>{formatDate(node.updatedAt)}</span>
+          </div>
+        </li>
+      );
+    })}
   </ul>
 );

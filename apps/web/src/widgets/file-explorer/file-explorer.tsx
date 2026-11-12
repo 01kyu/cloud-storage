@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect } from "react";
 import { skipToken } from "@reduxjs/toolkit/query";
 import { FolderOpen, RefreshCw } from "lucide-react";
 
@@ -11,6 +12,7 @@ import {
   serializeSort,
   SortControl,
   useExplorerSelector,
+  useExplorerUrlSync,
   ViewModeControl,
 } from "@features/toggle-view";
 import { UploadButton, UploadDropzone, UploadQueue } from "@features/upload-files";
@@ -20,19 +22,31 @@ import { Breadcrumbs, Button, EmptyState, LoadMore, Skeleton } from "@shared/ui"
 
 import styles from "./file-explorer.module.scss";
 import { NodeGrid } from "./node-grid";
+import { nodeRowId } from "./node-highlight";
 import { NodeList } from "./node-list";
 
 const SKELETON_ROWS = Array.from({ length: 6 }, (_, index) => index);
 
 export type FileExplorerProps = {
   folderId: string | null;
+  /** id объекта из `?highlight=` — возврат к результату поиска. */
+  highlightNodeId?: string | null;
+  /** Запрос из `?q=` — подсветка совпадения в имени. */
+  highlightQuery?: string;
 };
 
 /** Сортировка уходит в API параметром `sort=field:direction`. */
-export const FileExplorer = ({ folderId }: FileExplorerProps) => {
+export const FileExplorer = ({
+  folderId,
+  highlightNodeId = null,
+  highlightQuery = "",
+}: FileExplorerProps) => {
   const viewMode = useExplorerSelector(selectViewMode);
   const sort = useExplorerSelector(selectSort);
   const sortParam = serializeSort(sort);
+
+  useExplorerUrlSync();
+
   const { limit, canExpand, loadMore } = usePagedList(`${folderId ?? "root"}:${sortParam}`);
   const { data, isLoading, isError, isFetching, refetch } = useGetFolderChildrenQuery({
     folderId,
@@ -52,6 +66,15 @@ export const FileExplorer = ({ folderId }: FileExplorerProps) => {
       href: ROUTES.folder(crumb.id),
     })),
   ];
+
+  /** Возврат из поиска: подводим найденный объект в зону видимости один раз. */
+  useEffect(() => {
+    if (!highlightNodeId || isLoading) {
+      return;
+    }
+
+    document.getElementById(nodeRowId(highlightNodeId))?.scrollIntoView?.({ block: "center" });
+  }, [highlightNodeId, isLoading, items.length]);
 
   return (
     <section className={styles.root} aria-labelledby="file-explorer-title">
@@ -106,9 +129,17 @@ export const FileExplorer = ({ folderId }: FileExplorerProps) => {
             description="Здесь появятся загруженные файлы и созданные папки."
           />
         ) : viewMode === "grid" ? (
-          <NodeGrid items={items} />
+          <NodeGrid
+            items={items}
+            highlightNodeId={highlightNodeId}
+            highlightQuery={highlightQuery}
+          />
         ) : (
-          <NodeList items={items} />
+          <NodeList
+            items={items}
+            highlightNodeId={highlightNodeId}
+            highlightQuery={highlightQuery}
+          />
         )}
       </UploadDropzone>
 

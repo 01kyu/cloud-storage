@@ -56,6 +56,3 @@ export const selectViewMode = (state: ExplorerRootState): ExplorerViewMode =>
   state.explorer.viewMode;
 
 export const selectSort = (state: ExplorerRootState): ExplorerSort => state.explorer.sort;
-
-export const serializeSort = ({ field, direction }: ExplorerSort): string =>
-  `${field}:${direction}`;

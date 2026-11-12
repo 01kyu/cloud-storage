@@ -41,12 +41,12 @@ const describeResult = (node: Node): string =>
   node.type === NodeType.Folder ? `Папка · объектов: ${node.childCount}` : describeFile(node);
 
 /** Файл открывается в своей папке — отдельного роута у файла пока нет. */
-const hrefOf = (node: Node): string => {
+const hrefOf = (node: Node, query: string): string => {
   if (node.type === NodeType.Folder) {
     return ROUTES.folder(node.id);
   }
 
-  return node.folderId ? ROUTES.folder(node.folderId) : ROUTES.files;
+  return ROUTES.folderSearch(node.folderId, node.id, query);
 };
 
 export type SearchPaletteProps = {
@@ -95,7 +95,7 @@ export const SearchPalette = ({ open, onOpenChange }: SearchPaletteProps) => {
 
   const openNode = (node: Node): void => {
     onOpenChange(false);
-    router.push(hrefOf(node));
+    router.push(hrefOf(node, term));
   };
 
   const handleKeyDown = (event: KeyboardEvent<HTMLInputElement>): void => {

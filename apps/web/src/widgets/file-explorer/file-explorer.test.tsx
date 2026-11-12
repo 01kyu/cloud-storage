@@ -7,6 +7,7 @@ import { API_BASE_PATH, API_ROUTES } from "@cs/shared";
 import { getDb, SEED_IDS } from "@shared/api/mocks";
 
 import { server } from "../../test/msw";
+import { routerMock, searchParamsState } from "../../test/navigation";
 import { renderWithProviders } from "../../test/render-with-providers";
 import { signInAsDemo } from "../../test/session";
 
@@ -67,6 +68,33 @@ describe("FileExplorer", () => {
 
     expect(await screen.findByText("Не удалось загрузить папку")).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "Повторить" })).toBeInTheDocument();
+  });
+
+  it("применяет режим и сортировку из URL", async () => {
+    searchParamsState.current = new URLSearchParams("view=grid&sort=size:desc");
+
+    const { container } = renderWithProviders(<FileExplorer folderId={null} />);
+
+    await screen.findByRole("link", { name: /Документы/ });
+
+    expect(container.querySelector('[data-view="grid"]')).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Сортировка: Размер" })).toBeInTheDocument();
+  });
+
+  it("пишет режим в URL и не дублирует дефолты", async () => {
+    const user = userEvent.setup();
+
+    renderWithProviders(<FileExplorer folderId={null} />);
+
+    await screen.findByRole("link", { name: /Документы/ });
+    await user.click(screen.getByRole("radio", { name: "Сетка" }));
+
+    expect(routerMock.replace).toHaveBeenCalledWith("/files?view=grid", { scroll: false });
+
+    await user.click(screen.getByRole("radio", { name: "Список" }));
+
+    expect(screen.getByRole("radio", { name: "Список" })).toHaveAttribute("data-state", "on");
+    expect(routerMock.replace).toHaveBeenLastCalledWith("/files", { scroll: false });
   });
 
   it("переключает листинг в режим сетки", async () => {
@@ -210,6 +238,22 @@ describe("FileExplorer", () => {
     expect(screen.queryByText("Резюме.pdf")).not.toBeInTheDocument();
   });
 
+  it("копирует файл через меню строки", async () => {
+    const user = userEvent.setup();
+
+    renderWithProviders(<FileExplorer folderId={null} />);
+
+    await user.click(await screen.findByRole("button", { name: "Действия: Резюме.pdf" }));
+    await user.click(await screen.findByRole("menuitem", { name: "Копировать" }));
+
+    expect(await screen.findByText("Резюме (копия).pdf")).toBeInTheDocument();
+    // Тост объявляется ещё и в `aria-live`-регионе, поэтому берём точное совпадение.
+    expect(
+      screen.getByText("Создана копия «Резюме (копия).pdf»", { exact: true }),
+    ).toBeInTheDocument();
+    expect(getDb().files.filter((file) => file.name === "Резюме (копия).pdf")).toHaveLength(1);
+  });
+
   it("удаляет файл в корзину через меню строки", async () => {
     const user = userEvent.setup();
 
@@ -221,6 +265,20 @@ describe("FileExplorer", () => {
 
     await waitFor(() => expect(screen.queryByText("Резюме.pdf")).not.toBeInTheDocument());
     expect(getDb().trash.some((item) => item.id === SEED_IDS.resume)).toBe(true);
+  });
+
+  it("подсвечивает объект и совпадение в имени при возврате из поиска", async () => {
+    const { container } = renderWithProviders(
+      <FileExplorer folderId={null} highlightNodeId={SEED_IDS.resume} highlightQuery="Резю" />,
+    );
+
+    await screen.findByRole("link", { name: /Документы/ });
+
+    const row = container.querySelector(`#node-${SEED_IDS.resume}`);
+
+    expect(row).not.toBeNull();
+    expect(row?.querySelector("mark")).toHaveTextContent("Резю");
+    expect(row?.querySelector("mark")?.closest("[class*='highlighted']")).not.toBeNull();
   });
 
   it("переносит файл в папку перетаскиванием", async () => {
