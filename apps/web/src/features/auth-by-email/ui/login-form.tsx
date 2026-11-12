@@ -49,7 +49,7 @@ export const LoginForm = () => {
   };
 
   return (
-    <form className={styles.root} onSubmit={onSubmit} noValidate>
+    <form className={styles.root} onSubmit={(event) => void onSubmit(event)} noValidate>
       <Field label="Email" error={errors.email?.message} required>
         <Input
           type="email"

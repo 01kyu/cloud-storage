@@ -134,7 +134,11 @@ describe("UploadDropzone", () => {
 
     fireEvent.drop(zone as HTMLElement, { dataTransfer });
 
-    await waitFor(() => expect(fileByName("Брошенный.txt")?.status).toBe("ready"));
+    // Цепочка init → PUT тела → complete идёт через MSW: под инструментацией
+    // покрытия она иногда не укладывается в дефолтную секунду `waitFor`.
+    await waitFor(() => expect(fileByName("Брошенный.txt")?.status).toBe("ready"), {
+      timeout: 3000,
+    });
     expect(screen.queryByText("Отпустите файлы, чтобы загрузить")).not.toBeInTheDocument();
   });
 

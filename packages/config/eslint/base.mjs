@@ -40,6 +40,24 @@ const stylisticRules = {
   "@stylistic/no-trailing-spaces": "error",
 };
 
+/**
+ * Проверки, которым нужен тип (`no-floating-promises`, `no-misused-promises`, …).
+ * Подключаются точечно — type-aware lint заметно дороже: на `apps/web` это
+ * единственный воркспейс с React и большим объёмом кода.
+ *
+ * Ограничение `files` обязательно: конфиги (`*.config.mts`) и сервис-воркер
+ * не входят в `tsconfig`, и project service падает на них с parsing error.
+ */
+export const typeCheckedConfig = tseslint.config({
+  files: ["src/**/*.{ts,tsx}"],
+  extends: [...tseslint.configs.recommendedTypeChecked],
+  languageOptions: {
+    parserOptions: {
+      projectService: true,
+    },
+  },
+});
+
 export const baseConfig = [
   { ignores: sharedIgnores },
   js.configs.recommended,
