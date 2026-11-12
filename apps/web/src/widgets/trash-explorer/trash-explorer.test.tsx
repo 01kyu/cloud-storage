@@ -1,4 +1,4 @@
-import { screen } from "@testing-library/react";
+import { screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { beforeEach, describe, expect, it } from "vitest";
 
@@ -80,5 +80,72 @@ describe("TrashExplorer", () => {
     expect(await screen.findByText("Корзина очищена")).toBeInTheDocument();
     expect(await screen.findByText("Корзина пуста")).toBeInTheDocument();
     expect(getDb().trash).toHaveLength(0);
+  });
+
+  it("помечает шапку indeterminate при частичном выборе", async () => {
+    const user = userEvent.setup();
+
+    await moveToTrash(API_ROUTES.files.byId(SEED_IDS.resume));
+    await moveToTrash(API_ROUTES.files.byId(SEED_IDS.notes));
+
+    renderWithProviders(<TrashExplorer />);
+
+    await user.click(await screen.findByRole("checkbox", { name: "Выбрать «Резюме.pdf»" }));
+
+    expect(screen.getByText("Выбрано: 1")).toBeInTheDocument();
+    expect(screen.getByRole("checkbox", { name: "Выбрать все" })).toHaveAttribute(
+      "data-state",
+      "indeterminate",
+    );
+  });
+
+  it("восстанавливает выбранные объекты пачкой", async () => {
+    const user = userEvent.setup();
+
+    await moveToTrash(API_ROUTES.files.byId(SEED_IDS.resume));
+    await moveToTrash(API_ROUTES.files.byId(SEED_IDS.notes));
+
+    renderWithProviders(<TrashExplorer />);
+
+    await user.click(await screen.findByRole("checkbox", { name: "Выбрать все" }));
+
+    expect(screen.getByRole("checkbox", { name: "Выбрать все" })).toHaveAttribute(
+      "data-state",
+      "checked",
+    );
+
+    await user.click(screen.getByRole("button", { name: "Восстановить (2)" }));
+
+    expect(await screen.findByText("Восстановлено объектов: 2")).toBeInTheDocument();
+    expect(await screen.findByText("Корзина пуста")).toBeInTheDocument();
+    expect(getDb().trash).toHaveLength(0);
+    expect(getDb().files.some((file) => file.id === SEED_IDS.resume)).toBe(true);
+    expect(getDb().files.some((file) => file.id === SEED_IDS.notes)).toBe(true);
+  });
+
+  it("удаляет только выбранные объекты навсегда", async () => {
+    const user = userEvent.setup();
+
+    await moveToTrash(API_ROUTES.files.byId(SEED_IDS.resume));
+    await moveToTrash(API_ROUTES.files.byId(SEED_IDS.notes));
+
+    renderWithProviders(<TrashExplorer />);
+
+    await user.click(await screen.findByRole("checkbox", { name: "Выбрать «Резюме.pdf»" }));
+    await user.click(screen.getByRole("button", { name: "Удалить (1)" }));
+    await user.click(screen.getByRole("button", { name: "Удалить" }));
+
+    expect(await screen.findByText("Удалено навсегда объектов: 1")).toBeInTheDocument();
+    expect(await screen.findByText("Заметки.txt")).toBeInTheDocument();
+    await waitFor(() => {
+      expect(screen.queryByText("Резюме.pdf")).not.toBeInTheDocument();
+    });
+    // Выделение сбрасывается после действия: тулбар возвращается к «Выбрать все».
+    expect(screen.getByText("Выбрать все")).toBeInTheDocument();
+    expect(screen.getByRole("checkbox", { name: "Выбрать «Заметки.txt»" })).toHaveAttribute(
+      "data-state",
+      "unchecked",
+    );
+    expect(getDb().trash.map((item) => item.id)).toEqual([SEED_IDS.notes]);
   });
 });
